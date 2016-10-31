@@ -17,7 +17,10 @@ private:
 public:
 	Leg();
 	int set_position(int angle);
-	void drive();
+	void set_sample_freq(int sample_freq);
+	int get_position();
+	int get_cmd();
+	void drive(int cmd);
 	void update_position();
 };
 

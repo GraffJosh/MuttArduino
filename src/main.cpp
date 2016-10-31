@@ -4,12 +4,14 @@
 #include <Arduino.h>
 #include "../lib/motor_control.h"
 Leg *lb_leg;
-
+int print = 0;
+int sample_freq;
 //TC1 ch 0
 void TC3_Handler()
 {
         TC_GetStatus(TC1, 0);
-				lb_leg->update_position();
+        lb_leg->update_position();
+        print += 1;
 }
 
 void startTimer(Tc *tc, uint32_t channel, IRQn_Type irq, uint32_t frequency) {
@@ -29,19 +31,22 @@ void startTimer(Tc *tc, uint32_t channel, IRQn_Type irq, uint32_t frequency) {
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
 	Wire.begin(); // join i2c bus (address optional for master)
-  Serial.begin(9600);
-
+  Serial.begin(115200);
+  sample_freq = 5;
   // Initialize the legs
 		lb_leg = new Leg();
-		pinMode(13,OUTPUT);
-		startTimer(TC1, 0, TC3_IRQn, 5);
+    lb_leg->set_sample_freq(sample_freq);
+		startTimer(TC1, 0, TC3_IRQn, sample_freq);
 }
 
 // the loop function runs over and over again forever
 void loop() {
-	lb_leg->drive();
-}
+  if(print == 5)
+  {
+      Serial.print("curr_pos: ");
+      Serial.println(lb_leg->get_position());
+      lb_leg->set_position(-60);
+      print = 0;
+  }
 
-// void TIMER_HANDLER(){
-// 	lb_leg.update_position();
-// }
+}
