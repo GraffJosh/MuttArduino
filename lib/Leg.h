@@ -16,7 +16,8 @@ private:
 	int pwm_channel;
 public:
 	Leg();
-	int set_position(int angle);
+	double set_position(double angle);
+	double get_positon();
 	void drive();
 	void update_position();
 };

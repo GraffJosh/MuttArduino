@@ -8,7 +8,7 @@ Leg::Leg(void)
 	set_pos = 0;
 	curr_pos = 0;
 	cmd_signal = 0;
-	Kp = 0;
+	Kp = 1;
 	Ki = 0;
 	Kd = 0;
 
@@ -17,13 +17,16 @@ Leg::Leg(void)
 	encoder.zero();
 }
 
-
-int Leg::set_position(int angle)
+//ask the leg to go to a position
+double Leg::set_position(double angle)
 {
-
-	set_pos = (double) angle;
-
+	set_pos =  angle;
 	return angle;
+}
+
+double Leg::get_positon()
+{
+	return curr_pos;
 }
 
 //send PWM to motor controller
@@ -39,5 +42,5 @@ void Leg::drive()
 void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
-	pid.Compute();
+	//pid.Compute();
 }

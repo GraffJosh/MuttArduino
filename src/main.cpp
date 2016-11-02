@@ -4,12 +4,14 @@
 #include <Arduino.h>
 #include "../lib/motor_control.h"
 Leg *lb_leg;
+int print;
 
 //TC1 ch 0
 void TC3_Handler()
 {
         TC_GetStatus(TC1, 0);
 				lb_leg->update_position();
+				print = 1;
 }
 
 void startTimer(Tc *tc, uint32_t channel, IRQn_Type irq, uint32_t frequency) {
@@ -39,7 +41,13 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-	lb_leg->drive();
+	//lb_leg->drive();
+
+	if(print)
+	{
+		Serial.println(lb_leg->get_positon());
+		print = 0;
+	}
 }
 
 // void TIMER_HANDLER(){
