@@ -11,8 +11,11 @@ Leg::Leg(void)
 	Kp = 1;
 	Ki = 0;
 	Kd = 0;
-
+	pwm_channel =7;
+	pinMode(pwm_channel,OUTPUT);
 	pid.SetTunings(Kp,Ki,Kd);
+	pid.SetMode(AUTOMATIC);
+	pid.SetOutputLimits(170,250);
 	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
 	encoder.zero();
 }
@@ -29,12 +32,22 @@ double Leg::get_positon()
 	return curr_pos;
 }
 
-//send PWM to motor controller
-void Leg::drive()
+int Leg::get_cmd()
 {
-	analogWrite(pwm_channel,cmd_signal);
+	return cmd_signal;
 }
 
+//send PWM to motor controller
+void Leg::drive(int cmd)
+{
+	Serial.println(cmd);
+	analogWrite(pwm_channel,cmd);
+}
+
+void Leg::set_sample_freq(int sample_freq)
+{
+	pid.SetSampleTime(1/sample_freq);
+}
 
 
 //updates the position and computes PID.
@@ -43,4 +56,5 @@ void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
 	//pid.Compute();
+
 }

@@ -1,4 +1,4 @@
-
+ 
 #include "Wire.h"
 #include "Arduino.h"
 
@@ -32,7 +32,7 @@ void I2CEncoder::init(double rotation_factor, double time_delta, int ticks) {
     lastEncoder->unTerminate();
   }
   lastEncoder = this;
-  
+
   this->rotation_factor = rotation_factor;
   this->time_delta = time_delta;
   this->ticks = ticks;

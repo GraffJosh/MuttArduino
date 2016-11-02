@@ -19,6 +19,9 @@ public:
 	double set_position(double angle);
 	double get_positon();
 	void drive();
+	void set_sample_freq(int sample_freq);
+	int get_cmd();
+	void drive(int cmd);
 	void update_position();
 };
 
