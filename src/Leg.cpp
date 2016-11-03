@@ -11,7 +11,7 @@ Leg::Leg(void)
 	Kp = 1;
 	Ki = 0;
 	Kd = 0;
-	pwm_channel =7;
+	pwm_channel =8;
 	pinMode(pwm_channel,OUTPUT);
 	pid.SetTunings(Kp,Ki,Kd);
 	pid.SetMode(AUTOMATIC);
@@ -56,5 +56,6 @@ void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
 	//pid.Compute();
-
+	Serial.print(curr_pos);
+	Serial.print("    ");
 }
