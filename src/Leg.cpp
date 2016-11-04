@@ -11,8 +11,10 @@ Leg::Leg(void)
 	Kp = 1;
 	Ki = 0;
 	Kd = 0;
-	pwm_channel = 10;
-	pinMode(pwm_channel,OUTPUT);
+	fwd_chnl = 10;
+	rvs_chnl = 9;
+	pinMode(fwd_chnl,OUTPUT);
+	pinMode(rvs_chnl,OUTPUT);
 	pid.SetTunings(Kp,Ki,Kd);
 	pid.SetMode(AUTOMATIC);
 	pid.SetOutputLimits(170,250);
@@ -40,8 +42,16 @@ int Leg::get_cmd()
 //send PWM to motor controller
 void Leg::drive(int cmd)
 {
-	Serial.println(cmd);
-	analogWrite(pwm_channel,cmd);
+	if(cmd > 0)
+	{
+		analogWrite(fwd_chnl,cmd);
+		digitalWrite(rvs_chnl,0);
+	}
+	else if(cmd<0)
+	{
+		analogWrite(rvs_chnl,-1*cmd);
+		digitalWrite(fwd_chnl,0);
+	}
 }
 
 void Leg::set_sample_freq(int sample_freq)
@@ -56,6 +66,6 @@ void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
 	//pid.Compute();
-	Serial.print(curr_pos);
-	Serial.print("    ");
+	// Serial.print(curr_pos);
+	// Serial.print("    ");
 }

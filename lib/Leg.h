@@ -13,7 +13,7 @@ private:
 	I2CEncoder encoder;
 	PID pid;
 	double set_pos, curr_pos, cmd_signal, Kp, Ki, Kd;
-	int pwm_channel;
+	int fwd_chnl,rvs_chnl;
 public:
 	Leg();
 	double set_position(double angle);
