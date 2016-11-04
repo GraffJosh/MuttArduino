@@ -5,7 +5,7 @@
 #include "../lib/motor_control.h"
 #include <TimerOne.h>
 Leg *lb_leg;
-int print = 0, drive = 0;
+int print = 1, drive = 0;
 int sample_freq;
 //TC1 ch 0
 void TC3_Handler()
@@ -43,8 +43,8 @@ void setup() {
   // Initialize the legs
 		lb_leg = new Leg();
     lb_leg->set_sample_freq(sample_freq);
-    Timer1.initialize(100000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
-    Timer1.attachInterrupt( TC3_Handler ); // attach the service routine here
+    // Timer1.initialize(100000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
+    // Timer1.attachInterrupt( TC3_Handler ); // attach the service routine here
 
 		// startTimer(TC1, 0, TC3_IRQn, sample_freq);
 }
@@ -60,6 +60,15 @@ void loop() {
 		Serial.println(lb_leg->get_positon());
 		print = 0;
 
-    analogWrite(7, drive);
+    lb_leg->drive(drive);
 	}
+  delay(200);
+  lb_leg->drive(drive);
+  if(drive == 255)
+    drive = 0;
+  else
+    drive ++;
+
+
+  Serial.println(lb_leg->get_positon());
 }

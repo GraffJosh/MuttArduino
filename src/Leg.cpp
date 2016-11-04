@@ -11,7 +11,7 @@ Leg::Leg(void)
 	Kp = 1;
 	Ki = 0;
 	Kd = 0;
-	pwm_channel =8;
+	pwm_channel = 10;
 	pinMode(pwm_channel,OUTPUT);
 	pid.SetTunings(Kp,Ki,Kd);
 	pid.SetMode(AUTOMATIC);
