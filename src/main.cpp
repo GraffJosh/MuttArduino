@@ -66,13 +66,15 @@ void loop() {
 
 	if(print)
 	{
-    // Serial.print(drive);
-    // Serial.print("  ");
-		// Serial.println(lb_leg->get_positon());
 		print = 0;
+    lb_leg->set_position(90);
+    lb_leg->drive(lb_leg->get_cmd());
 
-    lb_leg->drive(drive);
-	}
+    Serial.print("Drive:");
+    Serial.print(lb_leg->get_cmd());
+    Serial.print("  pos:");
+		Serial.println(lb_leg->get_positon());
+  }
 
 
 }

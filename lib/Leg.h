@@ -13,7 +13,8 @@ private:
 	I2CEncoder encoder;
 	PID pid;
 	double set_pos, curr_pos, cmd_signal, Kp, Ki, Kd;
-	int fwd_chnl,rvs_chnl;
+	double max_angle_converted, min_angle_converted;
+	int fwd_chnl,rvs_chnl, max_angle,min_angle;
 public:
 	Leg();
 	double set_position(double angle);
