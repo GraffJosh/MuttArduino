@@ -8,7 +8,7 @@
 #include "../lib/motor_control.h"
 
 // Create an I2CEncoder for use
-I2CEncoder encoder;
+// I2CEncoder encoder;
 
 void setup_encoders()
 {

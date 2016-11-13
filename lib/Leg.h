@@ -3,10 +3,11 @@
 
 #include "../lib/I2CEncoder/I2CEncoder.h"
 #include "../lib/PID/PID_v1.h"
-#include "../lib/Trajectory.h"
+#include "Trajectory.h"
 #include <Arduino.h>
 void setup_encoders();
 
+class Trajectory;
 
 class Leg
 {

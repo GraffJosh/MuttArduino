@@ -6,6 +6,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include "../lib/motor_control.h"
+#include "../lib/Leg.h"
 #include "../lib/Trajectory.h"
 #include <avr/interrupt.h>
 #if due == 0
