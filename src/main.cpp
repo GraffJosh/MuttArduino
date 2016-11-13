@@ -3,9 +3,10 @@
 */
 
 #define due 0
-#include <wire.h>
+#include <Wire.h>
 #include <Arduino.h>
 #include "../lib/motor_control.h"
+#include "../lib/Trajectory.h"
 #include <avr/interrupt.h>
 #if due == 0
 #include <TimerOne.h>
@@ -17,17 +18,10 @@ int sample_freq;
 //ISR(TIMER1_COMPA_vect)
 void timerIsr()
 {
-      // #if due
-      //   TC_GetStatus(TC1, 0);
-      // #endif
-      //Serial.print("gotposition");
-			// 	print = 1;
-      //   if(drive < 255)
-      //   {
-      //     drive++;
-      //   }else{
-      //     drive = -255;
-      //   }
+      #if due
+        TC_GetStatus(TC1, 0);
+      #endif
+
       print = 1;
 }
 

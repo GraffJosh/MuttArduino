@@ -3,6 +3,7 @@
 
 #include "../lib/I2CEncoder/I2CEncoder.h"
 #include "../lib/PID/PID_v1.h"
+#include "../lib/Trajectory.h"
 #include <Arduino.h>
 void setup_encoders();
 
@@ -20,6 +21,7 @@ private:
 	int frc_chnl, max_frc, min_frc;
 public:
 	Leg();
+	int send_trajectory(int step, Trajectory traj);
 	int zero();
 	double set_position(double angle);
 	double get_position();

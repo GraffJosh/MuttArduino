@@ -42,10 +42,15 @@ Leg::Leg(void)
 	zero();
 }
 
-// double mapdouble(double x, double in_min, double in_max, double out_min, double out_max)
-// {
-//   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-// }
+
+int Leg::send_trajectory(int step, Trajectory traj)
+{
+
+
+	return 0;
+}
+
+
 
 //zeroes the leg using the force sensor.
 //returns zero on success.
