@@ -3,54 +3,121 @@
 
 Leg::Leg(void)
 : encoder()
-, pid(&curr_pos, &cmd_signal, &set_pos, Kp, Ki, Kd, REVERSE)
+, pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd, REVERSE)
+, frc_pid(&curr_frc, &cmd_frc, &set_frc, frc_Kp, frc_Ki, frc_Kd, REVERSE)
 {
 	set_pos = 0;
 	curr_pos = 0;
-	cmd_signal = 0;
-	Kp = 40;
-	Ki = 12;
-	Kd = .1;
+	cmd_pos = 0;
+	pos_Kp = 300;
+	pos_Ki = 200;
+	pos_Kd = 30;
+	set_frc = 0;
+	curr_frc = 0;
+	cmd_frc = 0;
+	frc_Kp = 40;
+	frc_Ki = 12;
+	frc_Kd = .1;
+
+	frc_chnl = A2;
 	fwd_chnl = 10;
 	rvs_chnl = 9;
-	max_angle=90;
+	max_angle=180;
 	min_angle = 0;
-	max_angle_converted = max_angle/360;
-	min_angle_converted = min_angle/360;
+	max_frc=250;
+	min_frc = 0;
+
+
+	pinMode(frc_chnl,INPUT);
 	pinMode(fwd_chnl,OUTPUT);
 	pinMode(rvs_chnl,OUTPUT);
-	pid.SetTunings(Kp,Ki,Kd);
-	pid.SetMode(AUTOMATIC);
-	pid.SetOutputLimits(-250,250);
+	pos_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
+	pos_pid.SetMode(AUTOMATIC);
+	pos_pid.SetOutputLimits(-250,250);
+	frc_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
+	frc_pid.SetMode(AUTOMATIC);
+	frc_pid.SetOutputLimits(-250,250);
+
 	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
-	encoder.zero();
+	zero();
 }
+
+// double mapdouble(double x, double in_min, double in_max, double out_min, double out_max)
+// {
+//   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+// }
+
+//zeroes the leg using the force sensor.
+//returns zero on success.
+int Leg::zero()
+{
+	while(get_force()<max_frc)
+	{
+		drive(-80);
+		Serial.print("zero force: ");
+		Serial.println(get_force());
+		update_force();
+	}
+	encoder.zero();
+	return 0;
+}
+
 
 //ask the leg to go to a position
 double Leg::set_position(double angle)
 {
-	if(angle > min_angle)
+
+	Serial.print("angle: ");
+	Serial.print(angle);
+	if(angle > max_angle)
 	{
 		angle = max_angle;
 	}else if(angle < min_angle)
 	{
 		angle = min_angle;
 	}
-	angle = map(angle, min_angle,max_angle,min_angle_converted,max_angle_converted);
-	Serial.print("angle:");
+	//angle = mapdouble(angle, min_angle,max_angle,min_angle_converted,max_angle_converted);
+	angle = -1*angle/120;
+	Serial.print("angle: ");
 	Serial.print(angle);
 	set_pos = angle;
 	return angle;
 }
-
-double Leg::get_positon()
+double Leg::get_position()
 {
 	return curr_pos;
 }
-
-int Leg::get_cmd()
+int Leg::get_position_cmd()
 {
-	return cmd_signal;
+	return cmd_pos;
+}
+
+
+
+
+
+//ask the leg to go to a force
+double Leg::set_force(double frc)
+{
+	if(frc > min_frc)
+	{
+		frc = max_frc;
+	}else if(frc < min_frc)
+	{
+		frc = min_frc;
+	}
+	Serial.print("frc: ");
+	Serial.print(frc);
+	set_frc = frc;
+	return frc;
+}
+double Leg::get_force()
+{
+	return curr_frc;
+}
+int Leg::get_force_cmd()
+{
+	return cmd_frc;
 }
 
 //send PWM to motor controller
@@ -72,7 +139,7 @@ void Leg::drive(int cmd)
 
 void Leg::set_sample_freq(int sample_freq)
 {
-	pid.SetSampleTime(1/sample_freq);
+	pos_pid.SetSampleTime(1/sample_freq);
 }
 
 
@@ -81,7 +148,16 @@ void Leg::set_sample_freq(int sample_freq)
 void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
-	pid.Compute();
+	pos_pid.Compute();
+	// Serial.print(curr_pos);
+	// Serial.print("    ");
+}
+//updates the position and computes PID.
+//WARNING. EXECUTED DURING INTERRUPT. DO NOT CHANGE.
+void Leg::update_force()
+{
+  curr_frc = analogRead(frc_chnl);
+	frc_pid.Compute();
 	// Serial.print(curr_pos);
 	// Serial.print("    ");
 }
