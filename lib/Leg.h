@@ -25,6 +25,7 @@ public:
 	int send_trajectory(int step, Trajectory traj);
 	int zero();
 	double set_position(double angle);
+	bool set_solenoid(bool solenoid);
 	double get_position();
 	int get_position_cmd();
 	double set_force(double frc);

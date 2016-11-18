@@ -97,7 +97,11 @@ int Leg::get_position_cmd()
 	return cmd_pos;
 }
 
+bool Leg::set_solenoid(bool solenoid)
+{
 
+	return true;
+}
 
 
 
