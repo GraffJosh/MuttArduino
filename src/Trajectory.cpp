@@ -11,7 +11,7 @@ Trajectory::Trajectory(void)
 //adds trajectory to the list of trajectories to be executed
 int Trajectory::send_trajectory(int curr_time)
 {
-	Frame *curr_frame = get_frame(curr_time);
+	Frame *curr_frame = get_frame(curr_time%TRAJ_LENGTH);
 	curr_frame->leg1->set_position(curr_frame->leg_pos);
 	curr_frame->leg1->set_solenoid(curr_frame->solenoid);
 

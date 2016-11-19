@@ -13,8 +13,10 @@
 #include <TimerOne.h>
 #endif
 Leg *lb_leg;
+Trajectory simple;
 int print = 1, drive = 0, pos_pot=A1;
 int sample_freq;
+volatile unsigned int curr_time = 0;
 //TC1 ch 0
 //ISR(TIMER1_COMPA_vect)
 void timerIsr()
@@ -22,7 +24,7 @@ void timerIsr()
       #if due
         TC_GetStatus(TC1, 0);
       #endif
-
+      ++curr_time;
       print = 1;
 }
 
@@ -75,14 +77,13 @@ void setup() {
 		startTimer(TC1, 0, TC3_IRQn, sample_freq);
     #else
     Serial.print("setup");
-    Timer1.initialize(sample_freq*1000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
+    Timer1.initialize(sample_freq*10000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
     Timer1.attachInterrupt( timerIsr ); // attach the service routine here
     //sei();
     // startTimer();
     #endif
 
-
-    lb_leg->set_position(90);
+    simple = Trajectory();
 }
 
 // the loop function runs over and over again forever
@@ -92,18 +93,21 @@ void loop() {
 	if(print)
 	{
 		print = 0;
-    lb_leg->set_position(map(analogRead(pos_pot), 0,1024,0,180));
+    double pos = map(analogRead(pos_pot), 0,1024,0,360);
+    lb_leg->set_position(pos);
+    (pos>90) ? lb_leg->set_solenoid(true) : lb_leg->set_solenoid(false);
+    // simple.send_trajectory(curr_time);
     lb_leg->update_position();
     lb_leg->update_force();
     lb_leg->drive(lb_leg->get_position_cmd());
 
 
-    Serial.print(" Drive:");
-    Serial.print(lb_leg->get_position_cmd());
-    Serial.print(" Force:");
-    Serial.print(lb_leg->get_force());
-    Serial.print("  pos:");
-		Serial.println(lb_leg->get_position());
+    // Serial.print(" Drive:");
+    // Serial.print(lb_leg->get_position_cmd());
+    // Serial.print(" Force:");
+    // Serial.print(lb_leg->get_force());
+    // Serial.print("  pos:");
+		// Serial.println(lb_leg->get_position());
   }
 
 

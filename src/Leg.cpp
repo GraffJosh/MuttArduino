@@ -9,9 +9,9 @@ Leg::Leg(void)
 	set_pos = 0;
 	curr_pos = 0;
 	cmd_pos = 0;
-	pos_Kp = 300;
-	pos_Ki = 200;
-	pos_Kd = 30;
+	pos_Kp = 350;
+	pos_Ki = 300;
+	pos_Kd = 10;
 	set_frc = 0;
 	curr_frc = 0;
 	cmd_frc = 0;
@@ -22,15 +22,17 @@ Leg::Leg(void)
 	frc_chnl = A2;
 	fwd_chnl = 10;
 	rvs_chnl = 9;
-	max_angle=180;
+	max_angle=360;
 	min_angle = 0;
-	max_frc=250;
+	max_frc=200;
 	min_frc = 0;
 
+	sol_chnl = 8;
 
 	pinMode(frc_chnl,INPUT);
 	pinMode(fwd_chnl,OUTPUT);
 	pinMode(rvs_chnl,OUTPUT);
+	pinMode(sol_chnl,OUTPUT);
 	pos_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
 	pos_pid.SetMode(AUTOMATIC);
 	pos_pid.SetOutputLimits(-250,250);
@@ -59,8 +61,8 @@ int Leg::zero()
 	while(get_force()<max_frc)
 	{
 		drive(-80);
-		Serial.print("zero force: ");
-		Serial.println(get_force());
+		// Serial.print("zero force: ");
+		// Serial.println(get_force());
 		update_force();
 	}
 	encoder.zero();
@@ -72,8 +74,8 @@ int Leg::zero()
 double Leg::set_position(double angle)
 {
 
-	Serial.print("angle: ");
-	Serial.print(angle);
+	// Serial.print("angle: ");
+	// Serial.print(angle);
 	if(angle > max_angle)
 	{
 		angle = max_angle;
@@ -99,8 +101,8 @@ int Leg::get_position_cmd()
 
 bool Leg::set_solenoid(bool solenoid)
 {
-
-	return true;
+	digitalWrite(sol_chnl, solenoid);
+	return solenoid;
 }
 
 

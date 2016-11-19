@@ -20,6 +20,7 @@ private:
 	double max_angle_converted, min_angle_converted;
 	int fwd_chnl,rvs_chnl, max_angle,min_angle;
 	int frc_chnl, max_frc, min_frc;
+	int sol_chnl;
 public:
 	Leg();
 	int send_trajectory(int step, Trajectory traj);

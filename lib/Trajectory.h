@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 
-#define TRAJ_LENGTH 25
+#define TRAJ_LENGTH 500
 #define SOLENOID_TOP 70 //angle after which to use solenoid
 #define SOLENOID_STEP 15 //angles per time to trigger solenoid
 
