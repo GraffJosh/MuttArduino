@@ -1,4 +1,5 @@
 #include "../lib/Leg.h"
+#include "../lib/SoftwareServo/SoftwareServo.h"
 #include "../lib/PID/PID_v1.h"
 
 Leg::Leg(void)
@@ -19,22 +20,20 @@ Leg::Leg(void)
 	frc_Ki = 12;
 	frc_Kd = .1;
 
-//all this needs to be initialized
 	frc_chnl = A2;
-	fwd_chnl = 10;
-	rvs_chnl = 9;
+	fwd_chnl = 7;
+	rvs_chnl = 6;
 	max_angle=360;
 	min_angle = 0;
-	max_frc=200;
+	max_frc=250;
 	min_frc = 0;
 
-	servo_chnl = 8;
-	servo.attach(servo_chnl);
+	servo_chnl = 9;
 
 	pinMode(frc_chnl,INPUT);
 	pinMode(fwd_chnl,OUTPUT);
 	pinMode(rvs_chnl,OUTPUT);
-	pinMode(sol_chnl,OUTPUT);
+	pinMode(servo_chnl,OUTPUT);
 	pos_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
 	pos_pid.SetMode(AUTOMATIC);
 	pos_pid.SetOutputLimits(-250,250);
@@ -42,6 +41,7 @@ Leg::Leg(void)
 	frc_pid.SetMode(AUTOMATIC);
 	frc_pid.SetOutputLimits(-250,250);
 
+	servo.attach(servo_chnl);
 	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
 	zero();
 }
@@ -67,6 +67,7 @@ int Leg::zero()
 		// Serial.println(get_force());
 		update_force();
 	}
+	set_servo(0);
 	encoder.zero();
 	return 0;
 }
@@ -101,11 +102,13 @@ int Leg::get_position_cmd()
 	return cmd_pos;
 }
 
-int Leg::set_solenoid(int solenoid)
+int Leg::set_servo(int pos)
 {
-
-	return solenoid;
+	pos = map(pos,0,180,-10,170);
+	servo.write(pos);
+	return pos;
 }
+
 
 
 
@@ -162,6 +165,7 @@ void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
 	pos_pid.Compute();
+	servo.refresh();
 	// Serial.print(curr_pos);
 	// Serial.print("    ");
 }

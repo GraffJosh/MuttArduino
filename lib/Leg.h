@@ -3,8 +3,8 @@
 
 #include "../lib/I2CEncoder/I2CEncoder.h"
 #include "../lib/PID/PID_v1.h"
-#include "Trajectory.h"
 #include "../lib/SoftwareServo/SoftwareServo.h"
+#include "Trajectory.h"
 #include <Arduino.h>
 void setup_encoders();
 
@@ -22,13 +22,13 @@ private:
 	double max_angle_converted, min_angle_converted;
 	int fwd_chnl,rvs_chnl, max_angle,min_angle;
 	int frc_chnl, max_frc, min_frc;
-	int sol_chnl;
+	int servo_chnl;
 public:
 	Leg();
 	int send_trajectory(int step, Trajectory traj);
 	int zero();
 	double set_position(double angle);
-	int set_solenoid(int solenoid);
+	int set_servo(int servo);
 	double get_position();
 	int get_position_cmd();
 	double set_force(double frc);

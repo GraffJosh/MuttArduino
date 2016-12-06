@@ -15,6 +15,7 @@
 Leg *lb_leg;
 Trajectory simple;
 int print = 1, drive = 0, pos_pot=A1;
+int servo_pos = 0;
 int sample_freq;
 volatile unsigned int curr_time = 0;
 //TC1 ch 0
@@ -95,7 +96,7 @@ void loop() {
     ++curr_time;
     double pos = map(analogRead(pos_pot), 0,1024,0,360);
     lb_leg->set_position(pos);
-    (pos>90) ? lb_leg->set_solenoid(pos/2) : lb_leg->set_solenoid(pos/2);
+    lb_leg->set_servo(pos/2);
     // simple.send_trajectory(curr_time);
     lb_leg->update_position();
     lb_leg->update_force();
@@ -109,9 +110,10 @@ void loop() {
     // Serial.print("  pos:");
 		// Serial.println(lb_leg->get_position());
   }
-  if(curr_time == 10)
+  if(curr_time == 200)
   {
     curr_time=0;
+
   }
 
 
