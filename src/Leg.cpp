@@ -19,6 +19,7 @@ Leg::Leg(void)
 	frc_Ki = 12;
 	frc_Kd = .1;
 
+//all this needs to be initialized
 	frc_chnl = A2;
 	fwd_chnl = 10;
 	rvs_chnl = 9;
@@ -27,7 +28,8 @@ Leg::Leg(void)
 	max_frc=200;
 	min_frc = 0;
 
-	sol_chnl = 8;
+	servo_chnl = 8;
+	servo.attach(servo_chnl);
 
 	pinMode(frc_chnl,INPUT);
 	pinMode(fwd_chnl,OUTPUT);
@@ -99,9 +101,9 @@ int Leg::get_position_cmd()
 	return cmd_pos;
 }
 
-bool Leg::set_solenoid(bool solenoid)
+int Leg::set_solenoid(int solenoid)
 {
-	digitalWrite(sol_chnl, solenoid);
+
 	return solenoid;
 }
 

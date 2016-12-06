@@ -24,7 +24,6 @@ void timerIsr()
       #if due
         TC_GetStatus(TC1, 0);
       #endif
-      ++curr_time;
       print = 1;
 }
 
@@ -93,9 +92,10 @@ void loop() {
 	if(print)
 	{
 		print = 0;
+    ++curr_time;
     double pos = map(analogRead(pos_pot), 0,1024,0,360);
     lb_leg->set_position(pos);
-    (pos>90) ? lb_leg->set_solenoid(true) : lb_leg->set_solenoid(false);
+    (pos>90) ? lb_leg->set_solenoid(pos/2) : lb_leg->set_solenoid(pos/2);
     // simple.send_trajectory(curr_time);
     lb_leg->update_position();
     lb_leg->update_force();
@@ -108,6 +108,10 @@ void loop() {
     // Serial.print(lb_leg->get_force());
     // Serial.print("  pos:");
 		// Serial.println(lb_leg->get_position());
+  }
+  if(curr_time == 10)
+  {
+    curr_time=0;
   }
 
 
