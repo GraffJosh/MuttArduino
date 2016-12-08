@@ -14,7 +14,7 @@
 #endif
 Leg *lb_leg;
 Trajectory simple;
-int print = 1, drive = 0, pos_pot=A1;
+int print = 1, drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
 int servo_pos = 0;
 int sample_freq;
 volatile unsigned int curr_time = 0;
@@ -68,7 +68,8 @@ void setup() {
 	Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
   sample_freq = 10;
-  pinMode(pos_pot, INPUT);
+  pinMode(lower_pos_pot, INPUT);
+  pinMode(upper_pos_pot, INPUT);
   // Initialize the legs
 		lb_leg = new Leg();
     lb_leg->set_sample_freq(sample_freq);
@@ -94,9 +95,10 @@ void loop() {
 	{
 		print = 0;
     ++curr_time;
-    double pos = map(analogRead(pos_pot), 0,1024,0,360);
-    lb_leg->set_position(pos);
-    lb_leg->set_servo(pos/2);
+    double upperpos = map(analogRead(upper_pos_pot), 0,1024,0,360);
+    double lowerpos = map(analogRead(lower_pos_pot), 0,1024,0,180);
+    lb_leg->set_position(upperpos);
+    lb_leg->set_servo(lowerpos);
     // simple.send_trajectory(curr_time);
     lb_leg->update_position();
     lb_leg->update_force();
@@ -113,7 +115,6 @@ void loop() {
   if(curr_time == 200)
   {
     curr_time=0;
-
   }
 
 
