@@ -3,7 +3,7 @@
 
 #include "../lib/I2CEncoder/I2CEncoder.h"
 #include "../lib/PID/PID_v1.h"
-#include "../lib/SoftwareServo/SoftwareServo.h"
+#include "../lib/Servo/src/Servo.h"
 #include "Trajectory.h"
 #include <Arduino.h>
 void setup_encoders();
@@ -14,7 +14,7 @@ class Leg
 {
 private:
 	I2CEncoder encoder;
-	SoftwareServo servo;
+	Servo servo;
 	PID pos_pid;
 	PID frc_pid;
 	double set_pos, curr_pos, cmd_pos, pos_Kp, pos_Ki, pos_Kd;
@@ -24,7 +24,7 @@ private:
 	int frc_chnl, max_frc, min_frc;
 	int servo_chnl;
 public:
-	Leg();
+	Leg(int,int,int,int);
 	int send_trajectory(int step, Trajectory traj);
 	int zero();
 	double set_position(double angle);

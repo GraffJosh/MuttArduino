@@ -1,9 +1,10 @@
- 
+
 #include "Wire.h"
 #include "Arduino.h"
 
 #include "I2CEncoder.h"
-
+#define SCL 21
+#define SDA 20
 // INITIALIZE
 unsigned char I2CEncoder::nextAddress = I2CENCODER_STARTING_ADDRESS;
 I2CEncoder* I2CEncoder::lastEncoder = NULL;

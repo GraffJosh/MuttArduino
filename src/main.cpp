@@ -2,44 +2,90 @@
 
 */
 
-#define due 0
+#define due 1
 #include <Wire.h>
 #include <Arduino.h>
 #include "../lib/motor_control.h"
 #include "../lib/Leg.h"
 #include "../lib/Trajectory.h"
 #include <avr/interrupt.h>
+#include "../lib/DueTimer/DueTimer.h"
 #if due == 0
-#include <TimerOne.h>
+// #include <TimerOne.h>
 #endif
+
+//Leg declarations
 Leg *lb_leg;
+Leg *rb_leg;
+Leg *lf_leg;
+Leg *rf_leg;
+
 Trajectory simple;
 int print = 1, drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
 int servo_pos = 0;
-int sample_freq;
+int sample_period;
 volatile unsigned int curr_time = 0;
-//TC1 ch 0
-//ISR(TIMER1_COMPA_vect)
+//left back motor declarations
+int left_back_fwd = 11;
+int left_back_rvs = 12;
+int left_back_servo = 13;
+int left_back_force = A8;
+
+//right back motor declarations
+int right_back_fwd = 2;
+int right_back_rvs = 3;
+int right_back_servo = 4;
+int right_back_force = A11;
+
+
+//left forward motor declarations
+int left_forward_fwd = 8;
+int left_forward_rvs = 9;
+int left_forward_servo = 10;
+int left_forward_force = A9;
+
+//right forward motor declarations
+int right_forward_fwd = 5;
+int right_forward_rvs = 6;
+int right_forward_servo = 7;
+int right_forward_force = A10;
+
+
+// #if due == 1
+// //TC1 ch 0
+// ISR(TIMER1_COMPA_vect)
+// {
+//   #if due == 1
+//     TC_GetStatus(TC1, 0);
+//   #endif
+//   print = 1;
+// }
+// #else
 void timerIsr()
 {
-      #if due
-        TC_GetStatus(TC1, 0);
-      #endif
-      print = 1;
+
+  print = 1;
 }
+// #endif
+
+
 
 #if due
-void startTimer(Tc *tc, uint32_t channel, IRQn_Type irq, uint32_t frequency) {
-        pmc_set_writeprotect(false);
-        pmc_enable_periph_clk((uint32_t)irq);
-        TC_Configure(tc, channel, TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK4);
-        uint32_t rc = VARIANT_MCK/128/frequency; //128 because we selected TIMER_CLOCK4 above
-        TC_SetRA(tc, channel, rc/2); //50% high, 50% low
-        TC_SetRC(tc, channel, rc);
-        TC_Start(tc, channel);
-        tc->TC_CHANNEL[channel].TC_IER=TC_IER_CPCS;
-        tc->TC_CHANNEL[channel].TC_IDR=~TC_IER_CPCS;
-        NVIC_EnableIRQ(irq);
+// void startTimer(Tc *tc, uint32_t channel, IRQn_Type irq, uint32_t frequency) {
+//         pmc_set_writeprotect(false);
+//         pmc_enable_periph_clk((uint32_t)irq);
+//         TC_Configure(tc, channel, TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK4);
+//         uint32_t rc = VARIANT_MCK/128/frequency; //128 because we selected TIMER_CLOCK4 above
+//         TC_SetRA(tc, channel, rc/2); //50% high, 50% low
+//         TC_SetRC(tc, channel, rc);
+//         TC_Start(tc, channel);
+//         tc->TC_CHANNEL[channel].TC_IER=TC_IER_CPCS;
+//         tc->TC_CHANNEL[channel].TC_IDR=~TC_IER_CPCS;
+//         NVIC_EnableIRQ(irq);
+// }
+void startTimer(uint32_t period)
+{
+  Timer1.attachInterrupt(timerIsr).start(1/period);
 }
 #else
 void startTimer()
@@ -64,21 +110,36 @@ void startTimer()
 #endif
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
+
 	Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
-  sample_freq = 10;
-  pinMode(lower_pos_pot, INPUT);
-  pinMode(upper_pos_pot, INPUT);
-  // Initialize the legs
-		lb_leg = new Leg();
-    lb_leg->set_sample_freq(sample_freq);
+sample_period = 100000;
+
+  Serial.print("Hello. Its me in Setup.");
+
+
+    // Initialize the legs
+		lb_leg = new Leg(left_back_fwd,left_back_rvs,left_back_servo,left_back_force);
+    lb_leg->set_sample_freq(sample_period);
+    lb_leg->set_servo(90);
+
+
+    //Leg declarations with all assigned pings
+    // rb_leg = new Leg(right_back_fwd,right_back_rvs,right_back_servo,right_back_force);
+    // rb_leg->set_sample_freq(sample_period);
+    //
+    // lf_leg = new Leg(left_forward_fwd,left_forward_rvs,left_forward_servo,left_forward_force);
+    // lf_leg->set_sample_freq(sample_period);
+    //
+    // rf_leg = new Leg(right_forward_fwd,right_forward_rvs,right_forward_servo,right_forward_force);
+    // rf_leg->set_sample_freq(sample_period);
 
     #if due
-		startTimer(TC1, 0, TC3_IRQn, sample_freq);
+		// startTimer(TC1, 0, TC3_IRQn, sample_period);
+    startTimer(sample_period);
     #else
     Serial.print("setup");
-    Timer1.initialize(sample_freq*10000); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
+    Timer1.initialize(sample_period); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
     Timer1.attachInterrupt( timerIsr ); // attach the service routine here
     //sei();
     // startTimer();
@@ -95,22 +156,22 @@ void loop() {
 	{
 		print = 0;
     ++curr_time;
-    double upperpos = map(analogRead(upper_pos_pot), 0,1024,0,360);
-    double lowerpos = map(analogRead(lower_pos_pot), 0,1024,0,180);
-    lb_leg->set_position(upperpos);
-    lb_leg->set_servo(lowerpos);
-    // simple.send_trajectory(curr_time);
-    lb_leg->update_position();
-    lb_leg->update_force();
-    lb_leg->drive(lb_leg->get_position_cmd());
-
-
-    // Serial.print(" Drive:");
-    // Serial.print(lb_leg->get_position_cmd());
-    // Serial.print(" Force:");
-    // Serial.print(lb_leg->get_force());
-    // Serial.print("  pos:");
-		// Serial.println(lb_leg->get_position());
+    // double upperpos = map(analogRead(upper_pos_pot), 0,1024,0,360);
+    // double lowerpos = map(analogRead(lower_pos_pot), 0,1024,0,180);
+    // lb_leg->set_position(upperpos);
+    // lb_leg->set_servo(lowerpos);
+    // // simple.send_trajectory(curr_time);
+    // lb_leg->update_position();
+    // lb_leg->update_force();
+    // lb_leg->drive(lb_leg->get_position_cmd());
+    //
+    //
+    Serial.print("Loop\n");
+    // // Serial.print(lb_leg->get_position_cmd());
+    // // Serial.print(" Force:");
+    // // Serial.print(lb_leg->get_force());
+    // // Serial.print("  pos:");
+		// // Serial.println(lb_leg->get_position());
   }
   if(curr_time == 200)
   {

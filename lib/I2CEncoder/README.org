@@ -23,7 +23,7 @@ Clock and Data lines.
 | Wire         | Black | Red | Yellow     | White      |
 | Arduino Uno  | GND   | V   | Analog 5   | Analog 4   |
 | Arduino Mega | GND   | V   | Digital 21 | Digital 20 |
-  
+
 ** Includes
 In order to use this library, you must include both the Wire
 Library[4] and this library (I2CEncoder).
@@ -37,7 +37,7 @@ The order in which you initialize the encoders is very important!
 First, the wire library must be started by calling =Wire.begin()=,
 then you must call the =init()= of each encoder method *in the order
 that they are chained together.* The one plugged into the Arduino
-first, then the one plugged into that and so on until the last encoder. 
+first, then the one plugged into that and so on until the last encoder.
 
 The first argument of the =init()= method is should convert encoder
 revolutions to output rotations. Three of these are defined by

@@ -15,7 +15,7 @@ I2CEncoder rightEncoder;
 void setup() {
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(9600);
-  
+
   // Initialize the encoders for a 269 motors that are moving 2/3 of a
   // foot per motor output shaft rotation.
   leftEncoder.init((2.0/3.0)*MOTOR_269_ROTATIONS, MOTOR_269_TIME_DELTA);

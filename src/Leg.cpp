@@ -1,8 +1,9 @@
 #include "../lib/Leg.h"
-#include "../lib/SoftwareServo/SoftwareServo.h"
+//#include "../lib/SoftwareServo/SoftwareServo.h"
+#include "../lib/Servo/src/Servo.h"
 #include "../lib/PID/PID_v1.h"
 
-Leg::Leg(void)
+Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin)
 : encoder()
 , pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd, REVERSE)
 , frc_pid(&curr_frc, &cmd_frc, &set_frc, frc_Kp, frc_Ki, frc_Kd, REVERSE)
@@ -20,15 +21,15 @@ Leg::Leg(void)
 	frc_Ki = 12;
 	frc_Kd = .1;
 
-	frc_chnl = A2;
-	fwd_chnl = 7;
-	rvs_chnl = 6;
+	frc_chnl = frc_chnl_pin;
+	fwd_chnl = fwd_chnl_pin;
+	rvs_chnl = rvs_chnl_pin;
 	max_angle=360;
 	min_angle = 0;
 	max_frc=250;
 	min_frc = 0;
 
-	servo_chnl = 9;
+	servo_chnl = servo_chnl_pin;
 
 	pinMode(frc_chnl,INPUT);
 	pinMode(fwd_chnl,OUTPUT);
@@ -42,8 +43,9 @@ Leg::Leg(void)
 	frc_pid.SetOutputLimits(-250,250);
 
 	servo.attach(servo_chnl);
+
 	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
-	zero();
+	//zero();
 }
 
 
@@ -165,7 +167,7 @@ void Leg::update_position()
 {
 	curr_pos = encoder.getPosition();
 	pos_pid.Compute();
-	servo.refresh();
+	// servo.refresh();
 	// Serial.print(curr_pos);
 	// Serial.print("    ");
 }
