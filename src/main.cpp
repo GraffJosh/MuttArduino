@@ -1,17 +1,16 @@
-/*
 
-*/
 
-#define due 1
+#define due 0
 #include <Wire.h>
 #include <Arduino.h>
 #include "../lib/motor_control.h"
 #include "../lib/Leg.h"
 #include "../lib/Trajectory.h"
 #include <avr/interrupt.h>
-#include "../lib/DueTimer/DueTimer.h"
+//#include "../lib/DueTimer/DueTimer.h"
+#include "../lib/Servo/src/Servo.h"
+#include <TimerOne.h>
 #if due == 0
-// #include <TimerOne.h>
 #endif
 
 //Leg declarations
@@ -19,35 +18,36 @@ Leg *lb_leg;
 Leg *rb_leg;
 Leg *lf_leg;
 Leg *rf_leg;
-
+Servo servoMotor;
+int ByteReceived;
 Trajectory simple;
 int print = 1, drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
 int servo_pos = 0;
 int sample_period;
+int legs_initialized = 0;
 volatile unsigned int curr_time = 0;
 //left back motor declarations
-int left_back_fwd = 11;
-int left_back_rvs = 12;
-int left_back_servo = 13;
+int left_back_fwd = 8; //10;
+int left_back_rvs = 6; //4;
+int left_back_servo = 32;
 int left_back_force = A8;
 
 //right back motor declarations
-int right_back_fwd = 2;
-int right_back_rvs = 3;
-int right_back_servo = 4;
+int right_back_fwd = 2; //3;
+int right_back_rvs = 3; //2;
+int right_back_servo = 30;
 int right_back_force = A11;
 
-
 //left forward motor declarations
-int left_forward_fwd = 8;
-int left_forward_rvs = 9;
-int left_forward_servo = 10;
+int left_forward_fwd = 4; //9;
+int left_forward_rvs = 5; //8;
+int left_forward_servo = 36;
 int left_forward_force = A9;
 
 //right forward motor declarations
-int right_forward_fwd = 5;
-int right_forward_rvs = 6;
-int right_forward_servo = 7;
+int right_forward_fwd = 9; //6;
+int right_forward_rvs = 10; //5;
+int right_forward_servo = 34;
 int right_forward_force = A10;
 
 
@@ -63,11 +63,21 @@ int right_forward_force = A10;
 // #else
 void timerIsr()
 {
-
-  print = 1;
+  if(legs_initialized)
+  {
+     print = 1;
+  }
 }
 // #endif
 
+void init_legs(){
+
+  rb_leg->init_leg_encoder();
+  lb_leg->init_leg_encoder();
+  lf_leg->init_leg_encoder();
+  rf_leg->init_leg_encoder();
+  legs_initialized = 1;
+}
 
 
 #if due
@@ -85,9 +95,10 @@ void timerIsr()
 // }
 void startTimer(uint32_t period)
 {
-  Timer1.attachInterrupt(timerIsr).start(1/period);
+  Timer1.attachInterrupt(timerIsr).start(period);
 }
 #else
+
 void startTimer()
 {
   cli();//stop interrupts
@@ -111,72 +122,111 @@ void startTimer()
 // the setup function runs once when you press reset or power the board
 void setup() {
 
-	Wire.begin(); // join i2c bus (address optional for master)
+  Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
-sample_period = 100000;
+  Serial.println("Starting");
+  sample_period = 40000;
 
   Serial.print("Hello. Its me in Setup.");
+  // Initialize the legs
+
+  //dont change the order of instantiation otherwise the encoders will me messed up
+  //1 -> RB Leg
+  //2 ->LB Leg
+  //3 -> RF Leg
+  //4 -> LF Leg
+  //LOOKING FROM THE BOTTOM OF THE ROBOT
+
+  //white cable from encoder is SDA
+  //yellow cable is clock source
+  rb_leg = new Leg(right_back_fwd,right_back_rvs,right_back_servo,right_back_force,0);
+  rb_leg->set_sample_freq(sample_period);
+
+  lb_leg = new Leg(left_back_fwd,left_back_rvs,left_back_servo,left_back_force,1);
+  lb_leg->set_sample_freq(sample_period);
+  //
+  lf_leg = new Leg(left_forward_fwd,left_forward_rvs,left_forward_servo,left_forward_force,1);
+  lf_leg->set_sample_freq(sample_period);
 
 
-    // Initialize the legs
-		lb_leg = new Leg(left_back_fwd,left_back_rvs,left_back_servo,left_back_force);
-    lb_leg->set_sample_freq(sample_period);
-    lb_leg->set_servo(90);
+  //rf leg 1000 is forwards, 2000 is backwards
+  rf_leg = new Leg(right_forward_fwd,right_forward_rvs,right_forward_servo,right_forward_force,0);
+  rf_leg->set_sample_freq(sample_period);
 
 
-    //Leg declarations with all assigned pings
-    // rb_leg = new Leg(right_back_fwd,right_back_rvs,right_back_servo,right_back_force);
-    // rb_leg->set_sample_freq(sample_period);
-    //
-    // lf_leg = new Leg(left_forward_fwd,left_forward_rvs,left_forward_servo,left_forward_force);
-    // lf_leg->set_sample_freq(sample_period);
-    //
-    // rf_leg = new Leg(right_forward_fwd,right_forward_rvs,right_forward_servo,right_forward_force);
-    // rf_leg->set_sample_freq(sample_period);
+  #if due
+  // startTimer(TC1, 0, TC3_IRQn, sample_period);
+  startTimer(sample_period);
+  #else
+  Serial.print("setup");
+  Timer1.initialize(sample_period); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
+  Timer1.attachInterrupt( timerIsr ); // attach the service routine here
+  //sei();
+  // startTimer();
+  #endif
 
-    #if due
-		// startTimer(TC1, 0, TC3_IRQn, sample_period);
-    startTimer(sample_period);
-    #else
-    Serial.print("setup");
-    Timer1.initialize(sample_period); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
-    Timer1.attachInterrupt( timerIsr ); // attach the service routine here
-    //sei();
-    // startTimer();
-    #endif
-
-    simple = Trajectory();
+  simple = Trajectory();
 }
 
 // the loop function runs over and over again forever
 void loop() {
-	//lb_leg->drive();
 
-	if(print)
-	{
-		print = 0;
-    ++curr_time;
-    // double upperpos = map(analogRead(upper_pos_pot), 0,1024,0,360);
-    // double lowerpos = map(analogRead(lower_pos_pot), 0,1024,0,180);
-    // lb_leg->set_position(upperpos);
-    // lb_leg->set_servo(lowerpos);
-    // // simple.send_trajectory(curr_time);
-    // lb_leg->update_position();
-    // lb_leg->update_force();
-    // lb_leg->drive(lb_leg->get_position_cmd());
-    //
-    //
-    Serial.print("Loop\n");
-    // // Serial.print(lb_leg->get_position_cmd());
-    // // Serial.print(" Force:");
-    // // Serial.print(lb_leg->get_force());
-    // // Serial.print("  pos:");
-		// // Serial.println(lb_leg->get_position());
-  }
-  if(curr_time == 200)
+
+  if (Serial.available() > 0)
   {
-    curr_time=0;
+    ByteReceived = Serial.read();
+
+
+    if(ByteReceived == '1') // Single Quote! This is a character.
+    {
+      Serial.print("Initializing Legs");
+      init_legs();
+    }
+
+    if(ByteReceived == '0')
+    {
+
+      Serial.print("RECEIVED 0");
+    }
+
+    Serial.println();    // End the line
+
+    // END Serial Available
   }
 
 
+
+
+
+
+  if(legs_initialized){
+    if(print){
+      rf_leg->update_position();
+      lf_leg->update_position();
+      rb_leg->update_position();
+      lb_leg->update_position();
+      rf_leg->drive();
+      //lf_leg->drive();
+      rb_leg->drive();
+      lb_leg->drive();
+      print = 0;
+      ++curr_time;
+
+    }
+    if(curr_time == 10)
+    {
+      // Serial.print("Pos: ");
+      // Serial.print(lb_leg->get_position());
+      // Serial.print(", cmd: ");
+      // Serial.print(lb_leg->get_position_cmd());
+      // Serial.print(", desire: ");
+      // Serial.println(lb_leg->set_position(160));
+      // Serial.println(rf_leg->set_position(160));
+      // Serial.println(rb_leg->set_position(160));
+      lb_leg->set_position(160);
+      rf_leg->set_position(160);
+      rb_leg->set_position(160);
+      curr_time=0;
+    }
+  }
 }

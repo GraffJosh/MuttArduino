@@ -3,17 +3,17 @@
 #include "../lib/Servo/src/Servo.h"
 #include "../lib/PID/PID_v1.h"
 
-Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin)
+Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, int left)
 : encoder()
-, pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd, REVERSE)
-, frc_pid(&curr_frc, &cmd_frc, &set_frc, frc_Kp, frc_Ki, frc_Kd, REVERSE)
+, pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd,DIRECT)
+, frc_pid(&curr_frc, &cmd_frc, &set_frc, frc_Kp, frc_Ki, frc_Kd,DIRECT)
 {
 	set_pos = 0;
 	curr_pos = 0;
 	cmd_pos = 0;
-	pos_Kp = 350;
-	pos_Ki = 300;
-	pos_Kd = 10;
+	pos_Kp = 1300; //3500
+	pos_Ki = 200;
+	pos_Kd = 20;//10;
 	set_frc = 0;
 	curr_frc = 0;
 	cmd_frc = 0;
@@ -26,7 +26,7 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin)
 	rvs_chnl = rvs_chnl_pin;
 	max_angle=360;
 	min_angle = 0;
-	max_frc=250;
+	max_frc=150;
 	min_frc = 0;
 
 	servo_chnl = servo_chnl_pin;
@@ -37,45 +37,60 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin)
 	pinMode(servo_chnl,OUTPUT);
 	pos_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
 	pos_pid.SetMode(AUTOMATIC);
-	pos_pid.SetOutputLimits(-250,250);
-	frc_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
-	frc_pid.SetMode(AUTOMATIC);
-	frc_pid.SetOutputLimits(-250,250);
-
+	pos_pid.SetOutputLimits(-500,500);
+	// frc_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
+	// frc_pid.SetMode(AUTOMATIC);
+	// frc_pid.SetOutputLimits(-250,250);
 	servo.attach(servo_chnl);
+	motor.attach(fwd_chnl);
 
-	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
-	//zero();
+
 }
 
+void Leg::get_info(){
+
+	Serial.println("Printing servo of leg");
+	Serial.println(servo_chnl);
+}
 
 int Leg::send_trajectory(int step, Trajectory traj)
 {
-
-
 	return 0;
 }
 
+void Leg::init_leg_encoder(){
 
+	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
+	Serial.println("Initializing Encoder");
+	zero();
+
+}
+
+double Leg::get_encoder_position()
+{
+	return encoder.getPosition();
+}
 
 //zeroes the leg using the force sensor.
 //returns zero on success.
 int Leg::zero()
 {
-	while(get_force()<max_frc)
+	for(int i=0;i<200;i++)
 	{
-		drive(-80);
-		// Serial.print("zero force: ");
-		// Serial.println(get_force());
-		update_force();
+		drive(1600);
+		delay(15);
+		i++;
+		// Serial.print(", zero force: ");
+		// update_force();
 	}
+	Serial.println("zeroed");
 	set_servo(0);
 	encoder.zero();
 	return 0;
 }
 
 
-//ask the leg to go to a position
+//ask the leg to go to a position 0->360
 double Leg::set_position(double angle)
 {
 
@@ -89,11 +104,14 @@ double Leg::set_position(double angle)
 		angle = min_angle;
 	}
 	//angle = mapdouble(angle, min_angle,max_angle,min_angle_converted,max_angle_converted);
-	angle = -1*angle/120;
-	Serial.print("angle: ");
-	Serial.print(angle);
+	if(left)
+	{
+		angle = 1*angle/120;
+	}else{
+		angle = -1*angle/120;
+	}
 	set_pos = angle;
-	return angle;
+	return set_pos;
 }
 double Leg::get_position()
 {
@@ -140,24 +158,27 @@ int Leg::get_force_cmd()
 
 //send PWM to motor controller
 //255 appears to be full in that direction.
-//ie. +255 is full fwd, -255 full rvs
+//ie. 2000 is full fwd, 1000 full rvs
 void Leg::drive(int cmd)
 {
-	if(cmd > 0)
+	motor.writeMicroseconds(cmd);
+}
+
+// drives the motor to the cmd_pos as defined by the PID structure
+void Leg::drive()
+{
+	if(left)
 	{
-		analogWrite(fwd_chnl,cmd);
-		digitalWrite(rvs_chnl,0);
-	}
-	else if(cmd<0)
-	{
-		analogWrite(rvs_chnl,-1*cmd);
-		digitalWrite(fwd_chnl,0);
+		motor.writeMicroseconds(1500-cmd_pos);
+	}else{
+		motor.writeMicroseconds(cmd_pos+1500);
 	}
 }
 
+
 void Leg::set_sample_freq(int sample_freq)
 {
-	pos_pid.SetSampleTime(1/sample_freq);
+	pos_pid.SetSampleTime(sample_freq/1000);
 }
 
 

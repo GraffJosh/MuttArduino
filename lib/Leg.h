@@ -15,6 +15,9 @@ class Leg
 private:
 	I2CEncoder encoder;
 	Servo servo;
+	Servo motor;
+
+
 	PID pos_pid;
 	PID frc_pid;
 	double set_pos, curr_pos, cmd_pos, pos_Kp, pos_Ki, pos_Kd;
@@ -22,15 +25,16 @@ private:
 	double max_angle_converted, min_angle_converted;
 	int fwd_chnl,rvs_chnl, max_angle,min_angle;
 	int frc_chnl, max_frc, min_frc;
-	int servo_chnl;
+	int servo_chnl,left;
 public:
-	Leg(int,int,int,int);
+	Leg(int,int,int,int,int left);
 	int send_trajectory(int step, Trajectory traj);
 	int zero();
 	double set_position(double angle);
 	int set_servo(int servo);
 	double get_position();
 	int get_position_cmd();
+	double get_encoder_position();
 	double set_force(double frc);
 	double get_force();
 	int get_force_cmd();
@@ -39,6 +43,8 @@ public:
 	void drive(int cmd);
 	void update_position();
 	void update_force();
+	void init_leg_encoder();
+	void get_info();
 };
 
 #endif
