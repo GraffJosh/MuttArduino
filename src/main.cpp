@@ -1,6 +1,7 @@
 
 
 #define due 0
+#define timingpin 52
 #include <Wire.h>
 #include <Arduino.h>
 #include "../lib/motor_control.h"
@@ -63,6 +64,7 @@ int right_forward_force = A10;
 // #else
 void timerIsr()
 {
+
   if(legs_initialized)
   {
      print = 1;
@@ -121,11 +123,11 @@ void startTimer()
 #endif
 // the setup function runs once when you press reset or power the board
 void setup() {
-
+  pinMode(timingpin,OUTPUT);
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
   Serial.println("Starting");
-  sample_period = 40000;
+  sample_period = 10000;
 
   Serial.print("Hello. Its me in Setup.");
   // Initialize the legs
@@ -156,7 +158,7 @@ void setup() {
 
   #if due
   // startTimer(TC1, 0, TC3_IRQn, sample_period);
-  startTimer(sample_period);
+  // startTimer(sample_period);
   #else
   Serial.print("setup");
   Timer1.initialize(sample_period); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
@@ -168,45 +170,35 @@ void setup() {
   simple = Trajectory();
 }
 
-// the loop function runs over and over again forever
-void loop() {
-
-
-  if (Serial.available() > 0)
+void serialEvent() {
+  if(Serial.available()>0)
   {
     ByteReceived = Serial.read();
-
-
     if(ByteReceived == '1') // Single Quote! This is a character.
     {
       Serial.print("Initializing Legs");
       init_legs();
     }
-
     if(ByteReceived == '0')
     {
-
       Serial.print("RECEIVED 0");
     }
-
     Serial.println();    // End the line
-
-    // END Serial Available
   }
+}
 
-
-
-
-
+// the loop function runs over and over again forever
+void loop() {
+  digitalWrite(timingpin,0);
 
   if(legs_initialized){
     if(print){
-      rf_leg->update_position();
+      lb_leg->update_position();
       lf_leg->update_position();
       rb_leg->update_position();
-      lb_leg->update_position();
+      rf_leg->update_position();
       rf_leg->drive();
-      //lf_leg->drive();
+      lf_leg->drive();
       rb_leg->drive();
       lb_leg->drive();
       print = 0;
@@ -215,18 +207,23 @@ void loop() {
     }
     if(curr_time == 10)
     {
-      // Serial.print("Pos: ");
-      // Serial.print(lb_leg->get_position());
-      // Serial.print(", cmd: ");
-      // Serial.print(lb_leg->get_position_cmd());
-      // Serial.print(", desire: ");
-      // Serial.println(lb_leg->set_position(160));
-      // Serial.println(rf_leg->set_position(160));
+      Serial.print("Pos: ");
+      Serial.print(lb_leg->get_position());
+      Serial.print(rb_leg->get_position());
+      Serial.print(rf_leg->get_position());
+      Serial.print(", cmd: ");
+      Serial.print(lb_leg->get_position_cmd());
+      Serial.print(rb_leg->get_position_cmd());
+      Serial.print(rf_leg->get_position_cmd());
+      Serial.print(", desire: ");
+      Serial.println(rf_leg->set_position(160));
+      // Serial.print(rf_leg->set_position(160));
       // Serial.println(rb_leg->set_position(160));
+      // lb_leg->set_position(160);
       lb_leg->set_position(160);
-      rf_leg->set_position(160);
       rb_leg->set_position(160);
       curr_time=0;
     }
   }
+  digitalWrite(timingpin,1);
 }
