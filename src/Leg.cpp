@@ -3,7 +3,7 @@
 #include "../lib/Servo/src/Servo.h"
 #include "../lib/PID/PID_v1.h"
 
-Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, int left)
+Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, int is_left)
 : encoder()
 , pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd,DIRECT)
 , frc_pid(&curr_frc, &cmd_frc, &set_frc, frc_Kp, frc_Ki, frc_Kd,DIRECT)
@@ -28,6 +28,7 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, 
 	min_angle = 0;
 	max_frc=150;
 	min_frc = 0;
+	left = is_left;
 
 	servo_chnl = servo_chnl_pin;
 

@@ -40,8 +40,8 @@ int right_back_servo = 30;
 int right_back_force = A11;
 
 //left forward motor declarations
-int left_forward_fwd = 4; //9;
-int left_forward_rvs = 5; //8;
+int left_forward_fwd = 5; //9;
+int left_forward_rvs = 4; //8;
 int left_forward_servo = 36;
 int left_forward_force = A9;
 
@@ -207,21 +207,25 @@ void loop() {
     }
     if(curr_time == 10)
     {
-      Serial.print("Pos: ");
-      Serial.print(lb_leg->get_position());
-      Serial.print(rb_leg->get_position());
-      Serial.print(rf_leg->get_position());
-      Serial.print(", cmd: ");
-      Serial.print(lb_leg->get_position_cmd());
-      Serial.print(rb_leg->get_position_cmd());
-      Serial.print(rf_leg->get_position_cmd());
-      Serial.print(", desire: ");
-      Serial.println(rf_leg->set_position(160));
+      // Serial.print("Pos: ");
+      // Serial.print(lb_leg->get_position());
+      // Serial.print(rb_leg->get_position());
+      // Serial.print(rf_leg->get_position());
+      // Serial.print(", cmd: ");
+      // Serial.print(lb_leg->get_position_cmd());
+      // Serial.print(rb_leg->get_position_cmd());
+      // Serial.print(rf_leg->get_position_cmd());
+      // Serial.print(", desire: ");
+      // Serial.print();
+      // Serial.println();
       // Serial.print(rf_leg->set_position(160));
       // Serial.println(rb_leg->set_position(160));
-      // lb_leg->set_position(160);
-      lb_leg->set_position(160);
-      rb_leg->set_position(160);
+      rf_leg->set_position(100);
+      lf_leg->set_position(100);
+      lb_leg->set_position(250);
+      rb_leg->set_position(100);
+
+      lb_leg->set_servo(100);
       curr_time=0;
     }
   }
