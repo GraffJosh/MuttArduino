@@ -220,12 +220,15 @@ void loop() {
       // Serial.println();
       // Serial.print(rf_leg->set_position(160));
       // Serial.println(rb_leg->set_position(160));
-      rf_leg->set_position(100);
-      lf_leg->set_position(100);
-      lb_leg->set_position(250);
-      rb_leg->set_position(100);
+      rf_leg->set_position(250);
+      // lf_leg->set_position(250);
+      // lb_leg->set_position(35);
+      // rb_leg->set_position(35);
 
-      lb_leg->set_servo(100);
+      lf_leg->set_servo(120);
+      rf_leg->set_servo(120);
+      rb_leg->set_servo(120);
+      lb_leg->set_servo(120);
       curr_time=0;
     }
   }
