@@ -1,5 +1,5 @@
 last = [0 0 0];
-angles = zeros(3,1);
+angles = zeros(3);
 base = 0;
 prox = -100;
 dist = -40;

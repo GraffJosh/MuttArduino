@@ -33,12 +33,13 @@ for n = 1%:5                         % repeat the motion 5 times
 
 %   internal definition of go to pos. didn't want to deal with sharing
 %   data.
-    leg_angles = zeros(200,3);
+    leg_angles = zeros(200,8);
 
 
     basegoal = [-20 20 20 -20];     % set angle goals for each of the leg's upper joint
     proxgoal = [-100 -50 -50 -100];
-    timegoal = 20;                   % set the time to get there.
+    last_timegoal = 0;
+    timegoal = 7;                   % set the time to get there.
     for i = 1:4 %for each leg
         % set the step distance for each limb
         basestep(i) = (basegoal(i)-base(i))/timegoal;
@@ -49,67 +50,98 @@ for n = 1%:5                         % repeat the motion 5 times
         prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
         dist = [-40 -40 -40 -40];
         angles = [base;prox;dist];
-        leg_angles(i,1)=angles(1);
-        leg_angles(i,2)=angles(2);
+        leg_angles(i+last_timegoal,1)=angles(1,1);
+        leg_angles(i+last_timegoal,2)=angles(2,1);
+        leg_angles(i+last_timegoal,3)=angles(1,2);
+        leg_angles(i+last_timegoal,4)=angles(2,2);
+        leg_angles(i+last_timegoal,5)=angles(1,3);
+        leg_angles(i+last_timegoal,6)=angles(2,3);
+        leg_angles(i+last_timegoal,7)=angles(1,4);
+        leg_angles(i+last_timegoal,8)=angles(2,4);
         points = plotArm3(angles,[500,300,350],fighandle);
     end
-
+    last_timegoal = timegoal+last_timegoal;
 
     
-%     
-%     basegoal = [0 0 0 0];
-%     proxgoal = [-25 -75 -75 -25];
-%     timegoal = 7;
-%     
-%     for i = 1:4
-%         basestep(i) = (basegoal(i)-base(i))/timegoal;
-%         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
-%     end
-%     for i = 1:timegoal
-%         base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
-%         prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
-%         dist = [-40 -40 -40 -40];
-%         angles = [base;prox;dist];
-%         points = plotArm3(angles,[500,300,350],fighandle);
-%     end
-%     
-%     
-%     
-%     
-%     
-%     basegoal = [20 -20 -20 20];
-%     proxgoal = [-50 -100 -100 -50];
-%     timegoal = 7;
-%     
-%     for i = 1:4
-%         basestep(i) = (basegoal(i)-base(i))/timegoal;
-%         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
-%     end
-%     for i = 1:timegoal
-%         base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
-%         prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
-%         dist = [-40 -40 -40 -40];
-%         angles = [base;prox;dist];
-%         points = plotArm3(angles,[500,300,350],fighandle);
-%     end 
-%     
-%     
-%     
-%     basegoal = [-20 20 20 -20];
-%     proxgoal = [-75 -25 -25 -75];
-%     timegoal = 10;
-%     
-%     for i = 1:4
-%         basestep(i) = (basegoal(i)-base(i))/timegoal;
-%         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
-%     end
-%     for i = 1:timegoal
-%         base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
-%         prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
-%         dist = [-40 -40 -40 -40];
-%         angles = [base;prox;dist];
-%         points = plotArm3(angles,[500,300,350],fighandle);
-%     end
+    
+    basegoal = [0 0 0 0];
+    proxgoal = [-25 -75 -75 -25];
+    timegoal = 7;
+    
+    for i = 1:4
+        basestep(i) = (basegoal(i)-base(i))/timegoal;
+        proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
+    end
+    for i = 1:timegoal
+        base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
+        prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
+        dist = [-40 -40 -40 -40];
+        angles = [base;prox;dist];
+        leg_angles(i+last_timegoal,1)=angles(1,1);
+        leg_angles(i+last_timegoal,2)=angles(2,1);
+        leg_angles(i+last_timegoal,3)=angles(1,2);
+        leg_angles(i+last_timegoal,4)=angles(2,2);
+        leg_angles(i+last_timegoal,5)=angles(1,3);
+        leg_angles(i+last_timegoal,6)=angles(2,3);
+        leg_angles(i+last_timegoal,7)=angles(1,4);
+        leg_angles(i+last_timegoal,8)=angles(2,4);
+        points = plotArm3(angles,[500,300,350],fighandle);
+    end
+    last_timegoal = timegoal+last_timegoal;
+    
+    
+    
+    basegoal = [20 -20 -20 20];
+    proxgoal = [-50 -100 -100 -50];
+    timegoal = 7;
+    
+    for i = 1:4
+        basestep(i) = (basegoal(i)-base(i))/timegoal;
+        proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
+    end
+    for i = 1:timegoal
+        base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
+        prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
+        dist = [-40 -40 -40 -40];
+        angles = [base;prox;dist];
+        leg_angles(i+last_timegoal,1)=angles(1,1);
+        leg_angles(i+last_timegoal,2)=angles(2,1);
+        leg_angles(i+last_timegoal,3)=angles(1,2);
+        leg_angles(i+last_timegoal,4)=angles(2,2);
+        leg_angles(i+last_timegoal,5)=angles(1,3);
+        leg_angles(i+last_timegoal,6)=angles(2,3);
+        leg_angles(i+last_timegoal,7)=angles(1,4);
+        leg_angles(i+last_timegoal,8)=angles(2,4);
+        points = plotArm3(angles,[500,300,350],fighandle);
+    end 
+    last_timegoal = timegoal+last_timegoal;
+    
+    
+    
+    basegoal = [-20 20 20 -20];
+    proxgoal = [-75 -25 -25 -75];
+    timegoal = 10;
+    
+    for i = 1:4
+        basestep(i) = (basegoal(i)-base(i))/timegoal;
+        proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
+    end
+    for i = 1:timegoal
+        base = [base(1)+basestep(1) base(2)+basestep(2) base(3)+basestep(3) base(4)+basestep(4)];
+        prox = [prox(1)+proxstep(1) prox(2)+proxstep(2) prox(3)+proxstep(3) prox(4)+proxstep(4)];
+        dist = [-40 -40 -40 -40];
+        angles = [base;prox;dist];
+        leg_angles(i+last_timegoal,1)=angles(1,1);
+        leg_angles(i+last_timegoal,2)=angles(2,1);
+        leg_angles(i+last_timegoal,3)=angles(1,2);
+        leg_angles(i+last_timegoal,4)=angles(2,2);
+        leg_angles(i+last_timegoal,5)=angles(1,3);
+        leg_angles(i+last_timegoal,6)=angles(2,3);
+        leg_angles(i+last_timegoal,7)=angles(1,4);
+        leg_angles(i+last_timegoal,8)=angles(2,4);
+        points = plotArm3(angles,[500,300,350],fighandle);
+    end
+    last_timegoal = timegoal+last_timegoal;
 
 end
 
