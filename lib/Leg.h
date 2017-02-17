@@ -16,8 +16,6 @@ private:
 	I2CEncoder encoder;
 	Servo servo;
 	Servo motor;
-
-
 	PID pos_pid;
 	PID frc_pid;
 	double set_pos, curr_pos, cmd_pos, pos_Kp, pos_Ki, pos_Kd;
@@ -28,7 +26,7 @@ private:
 	int servo_chnl,left;
 public:
 	Leg(int,int,int,int,int left);
-	int send_trajectory(int step, Trajectory traj);
+	int send_trajectory(Trajectory traj);
 	int zero();
 	double set_position(double angle);
 	int set_servo(int servo);

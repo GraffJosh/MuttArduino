@@ -2,7 +2,7 @@
 //#include "../lib/SoftwareServo/SoftwareServo.h"
 #include "../lib/Servo/src/Servo.h"
 #include "../lib/PID/PID_v1.h"
-
+#include "../lib/Trajectory.h"
 Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, int is_left)
 : encoder()
 , pos_pid(&curr_pos, &cmd_pos, &set_pos, pos_Kp, pos_Ki, pos_Kd,DIRECT)
@@ -20,7 +20,6 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, 
 	frc_Kp = 40;
 	frc_Ki = 12;
 	frc_Kd = .1;
-
 	frc_chnl = frc_chnl_pin;
 	fwd_chnl = fwd_chnl_pin;
 	rvs_chnl = rvs_chnl_pin;
@@ -42,7 +41,7 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, 
 	// frc_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
 	// frc_pid.SetMode(AUTOMATIC);
 	// frc_pid.SetOutputLimits(-250,250);
-	servo.attach(servo_chnl);
+	//servo.attach(servo_chnl);
 	motor.attach(fwd_chnl);
 
 
@@ -54,7 +53,7 @@ void Leg::get_info(){
 	Serial.println(servo_chnl);
 }
 
-int Leg::send_trajectory(int step, Trajectory traj)
+int Leg::send_trajectory(Trajectory traj)
 {
 	return 0;
 }

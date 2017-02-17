@@ -10,6 +10,7 @@
 #include <avr/interrupt.h>
 //#include "../lib/DueTimer/DueTimer.h"
 #include "../lib/Servo/src/Servo.h"
+#include "trajectories.h"
 #include <TimerOne.h>
 #if due == 0
 #endif
@@ -21,7 +22,7 @@ Leg *lf_leg;
 Leg *rf_leg;
 Servo servoMotor;
 int ByteReceived;
-Trajectory simple;
+Trajectory* simple;//(100, walk_1);
 int print = 1, drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
 int servo_pos = 0;
 int sample_period;
@@ -73,11 +74,12 @@ void timerIsr()
 // #endif
 
 void init_legs(){
-
   rb_leg->init_leg_encoder();
   lb_leg->init_leg_encoder();
   lf_leg->init_leg_encoder();
   rf_leg->init_leg_encoder();
+
+
   legs_initialized = 1;
 }
 
@@ -126,10 +128,10 @@ void setup() {
   pinMode(timingpin,OUTPUT);
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
-  Serial.println("Starting");
+  Serial.println("JPG Industries Mutt, Now Online.");
   sample_period = 10000;
+  simple = new Trajectory(10, walk_1);
 
-  Serial.print("Hello. Its me in Setup.");
   // Initialize the legs
 
   //dont change the order of instantiation otherwise the encoders will me messed up
@@ -167,7 +169,6 @@ void setup() {
   // startTimer();
   #endif
 
-  simple = Trajectory();
 }
 
 void serialEvent() {
@@ -221,14 +222,16 @@ void loop() {
       // Serial.print(rf_leg->set_position(160));
       // Serial.println(rb_leg->set_position(160));
       rf_leg->set_position(250);
-      // lf_leg->set_position(250);
-      // lb_leg->set_position(35);
-      // rb_leg->set_position(35);
+      lf_leg->set_position(250);
+      lb_leg->set_position(35);
+      rb_leg->set_position(35);
 
-      lf_leg->set_servo(120);
-      rf_leg->set_servo(120);
-      rb_leg->set_servo(120);
-      lb_leg->set_servo(120);
+      // lf_leg->set_servo(170);
+      // rf_leg->set_servo(170);
+
+
+      // rb_leg->set_servo(120);
+      // lb_leg->set_servo(120);
       curr_time=0;
     }
   }

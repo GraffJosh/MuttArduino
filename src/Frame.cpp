@@ -5,15 +5,15 @@ Frame::Frame(int upper_pos_rb_var, int upper_pos_lb_var, int upper_pos_lf_var, i
         int lower_pos_lb_var,
         int lower_pos_lf_var,
         int lower_pos_rf_var){
-    
-    int upper_pos_rb = upper_pos_rb_var;
-    int upper_pos_lb = upper_pos_lb_var;
-    int upper_pos_lf = upper_pos_lf_var;
-    int upper_pos_rf = upper_pos_rf_var;
-     
-    int lower_pos_rb = lower_pos_rb_var;
-    int lower_pos_lb = lower_pos_lb_var;
-    int lower_pos_lf = lower_pos_lf_var;
-    int lower_pos_rf = lower_pos_rf_var;
-    
+
+    positions[0] = upper_pos_rb_var;
+    positions[1] = upper_pos_lb_var;
+    positions[2] = upper_pos_lf_var;
+    positions[3] = upper_pos_rf_var;
+
+    positions[4] = lower_pos_rb_var;
+    positions[5] = lower_pos_lb_var;
+    positions[6] = lower_pos_lf_var;
+    positions[7] = lower_pos_rf_var;
+
 }
