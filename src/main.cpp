@@ -221,14 +221,16 @@ void loop() {
       // Serial.print(rf_leg->set_position(160));
       // Serial.println(rb_leg->set_position(160));
       rf_leg->set_position(250);
-      // lf_leg->set_position(250);
-      // lb_leg->set_position(35);
-      // rb_leg->set_position(35);
+      lf_leg->set_position(250);
+      lb_leg->set_position(35);
+      rb_leg->set_position(35);
 
-      lf_leg->set_servo(120);
-      rf_leg->set_servo(120);
-      rb_leg->set_servo(120);
-      lb_leg->set_servo(120);
+      // lf_leg->set_servo(170);
+      // rf_leg->set_servo(170);
+
+
+      // rb_leg->set_servo(120);
+      // lb_leg->set_servo(120);
       curr_time=0;
     }
   }
