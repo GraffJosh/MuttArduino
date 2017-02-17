@@ -3,8 +3,8 @@ last = [0 0 0];
 angles = zeros(3,4);
 base = zeros(4);
 prox = [-100 -100 -100 -100];
-dist = [-40 -40 -40 -40];
-basegoal = zeros(4);
+dist = [-20 -20 -20 -20];
+basegoal = [0 0 0 0];
 proxgoal = [-100 -100 -100 -100];
 basestep = zeros(4);
 proxstep = zeros(4);
@@ -16,7 +16,7 @@ axis equal;
 axis([-1500 700 0 900]);
 grid on;
 
-for n = 1%:5                         % repeat the motion 5 times
+for n = 1:2                         % repeat the motion 5 times
 %     basegoal = -20;
 %     proxgoal = prox;
 %     timegoal = 20;
@@ -35,11 +35,11 @@ for n = 1%:5                         % repeat the motion 5 times
 %   data.
     leg_angles = zeros(200,8);
 
-
-    basegoal = [-20 20 20 -20];     % set angle goals for each of the leg's upper joint
-    proxgoal = [-100 -50 -50 -100];
+               % FR BL BR FL
+    basegoal = [-20 0 0 0];     % set angle goals for each of the leg's upper joint
+    proxgoal = [-100 -90 -90 -90];
     last_timegoal = 0;
-    timegoal = 7;                   % set the time to get there.
+    timegoal = 20;                   % set the time to get there.
     for i = 1:4 %for each leg
         % set the step distance for each limb
         basestep(i) = (basegoal(i)-base(i))/timegoal;
@@ -62,12 +62,9 @@ for n = 1%:5                         % repeat the motion 5 times
     end
     last_timegoal = timegoal+last_timegoal;
 
-    
-    
-    basegoal = [0 0 0 0];
-    proxgoal = [-25 -75 -75 -25];
-    timegoal = 7;
-    
+    basegoal = [-20 0 0 0];
+    proxgoal = [-75 -90 -90 -90];
+    timegoal = 20;
     for i = 1:4
         basestep(i) = (basegoal(i)-base(i))/timegoal;
         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
@@ -88,13 +85,10 @@ for n = 1%:5                         % repeat the motion 5 times
         points = plotArm3(angles,[500,300,350],fighandle);
     end
     last_timegoal = timegoal+last_timegoal;
-    
-    
-    
-    basegoal = [20 -20 -20 20];
-    proxgoal = [-50 -100 -100 -50];
-    timegoal = 7;
-    
+        
+    basegoal = [-10 0 0 0];
+    proxgoal = [-85 -100 -100 -100];
+    timegoal = 20;
     for i = 1:4
         basestep(i) = (basegoal(i)-base(i))/timegoal;
         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
@@ -115,13 +109,10 @@ for n = 1%:5                         % repeat the motion 5 times
         points = plotArm3(angles,[500,300,350],fighandle);
     end 
     last_timegoal = timegoal+last_timegoal;
-    
-    
-    
-    basegoal = [-20 20 20 -20];
-    proxgoal = [-75 -25 -25 -75];
-    timegoal = 10;
-    
+        
+    basegoal = [0 0 0 0];
+    proxgoal = [-100 -100 -100 -100];
+    timegoal = 20;
     for i = 1:4
         basestep(i) = (basegoal(i)-base(i))/timegoal;
         proxstep(i) = (proxgoal(i)-prox(i))/timegoal;
