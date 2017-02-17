@@ -1,0 +1,19 @@
+function phi = cam_transform(Theta1, Theta2)    
+%phi = output;
+Theta1f = Theta1;%input;
+Theta2f = Theta2;%input;
+alpha = 96.26;% deg
+R = 0.65;% in
+lcable = 11.386;%in
+l1 = 2.6206;% in
+A = 3.423;% in
+B = 2.6844;% in
+C = 50.65;% deg
+Theta1o = 180;% deg
+D2 = 1.7526;% in
+Beta = 132.50;% deg
+D1 = 0.9114;% in
+Theta2o = -51.25;% deg
+
+k1 = sqrt(A^2 + B^2 + -2*A*B*cos(C + (Theta1f - Theta1o)));
+phi = (180 / (pi * R)) * ((-alpha * pi * R) / 180 + lcable - l1 - k1 - D2 + (Beta * pi * R) / 180 - D1 - ((Theta2f - Theta2o) * pi * R) / 180)
