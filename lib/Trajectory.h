@@ -11,19 +11,18 @@ private:
   //int curr_time,curr_index;
   //Frame sequence[TRAJ_LENGTH];
   int size;
-  Frame* frameList;
-  Frame endFrame;
-
+  Frame* frame_list;
+  void build_list(int list_size,int list_location[][8], Frame* list_return);
 public:
-  Trajectory(int size, Frame* frameList);
+  //constructor.
+  //Size of the Trajectory
+  //pointer to the list of integers for the positions
+    //the list is 100x8
+  Trajectory(int size, int trajFrameList[][8]);
+  Trajectory();
 
-  // int send_trajectory(int curr_time);
-	// Frame* get_frame(int curr_time);
-  // int push_back(Leg *leg1, double leg_pos, bool servo);
-  // int push_back(Frame *new_frame, int num_frames);
-  // int insert_frame(Leg *leg1, double leg_pos, bool servo, int new_time);
-	// int plan_motion(Leg *leg, double start_angle, double end_angle, int time_period);
 
+  void add_list(int n, int list_location[][8]);
 };
 
 
