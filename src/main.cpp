@@ -8,9 +8,12 @@
 #include "../lib/Leg.h"
 #include "../lib/Trajectory.h"
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#define __AVR_ATmega2560__ 1
+#include <avr/io.h>
 //#include "../lib/DueTimer/DueTimer.h"
 #include "../lib/Servo/src/Servo.h"
-#include "trajectories.h"
+#include "../gait_1.h"
 #include <TimerOne.h>
 #if due == 0
 #endif
@@ -135,7 +138,11 @@ void setup() {
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
   sample_period = 10000;
-  simple = new Trajectory(321, walk_1);
+
+  //the current_execution frame, with heap allocated memory (local_positions)
+  curr_frame =new Frame((int*)malloc(sizeof(int)*8));
+  simple = new Trajectory(321, gait_1); //creates a traj with len 321, and location gait_1
+
 
   // Initialize the legs
 
@@ -215,19 +222,21 @@ void loop() {
     }
     if(traj_loaded && (traj_time % traj_period)==0)
     {
-      curr_frame = current_trajectory->get_frame(traj_time);
+      current_trajectory->get_frame(traj_time,curr_frame);
       Serial.print("Exec Frame");
       curr_frame->print();
+
+
       if(curr_frame->is_null())
       {
         current_trajectory = NULL;
         traj_loaded = 0;
       }else{
 
-        rb_leg->set_position(curr_frame->upper_pos_rb,curr_frame->lower_pos_rb);
-        lb_leg->set_position(curr_frame->upper_pos_lb,curr_frame->lower_pos_lb);
-        rf_leg->set_position(curr_frame->upper_pos_rf,curr_frame->lower_pos_rf);
-        lf_leg->set_position(curr_frame->upper_pos_lf,curr_frame->lower_pos_lf);
+        rb_leg->set_position(curr_frame->local_positions[4],curr_frame->local_positions[5]);
+        lb_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]);
+        rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
+        lf_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]);
         Serial.print(lf_leg->get_position_cmd());
       }
     }
