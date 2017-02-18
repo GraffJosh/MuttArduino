@@ -435,12 +435,34 @@ for n = 1:1                         % repeat the motion 5 times
 end 
 % leg_angles =int2str(leg_angles);
 % int2str(leg_angles(i,2))
-data{1,1} = '{';
+filename = 'gait_1';
+filepath = strcat('g:\Downloads\MuttArduino\',filename,'.h')
+fileID = fopen(filepath,'w');
+fprintf(fileID,'#ifndef %s\n#define %s 1\n',filename,filename);
+fprintf(fileID,'static int %s[%d][8]=\n',filename,size(leg_angles,1));
+fprintf(fileID,'{');
+% data{1,1} = '{';
 for i = 2:321
- data{i,1} = ['{' int2str(leg_angles(i-1,2)) ',' int2str(leg_angles(i-1,3)) ',' int2str(leg_angles(i-1,4)) ',' int2str(leg_angles(i-1,5)) ',' int2str(leg_angles(i-1,6)) ',' int2str(leg_angles(i-1,7)) ',' int2str(leg_angles(i-1,8)) ',' int2str(leg_angles(i-1,9)) '},'];
+%  data{i,1} = ['{' int2str(leg_angles(i-1,2)) ',' int2str(leg_angles(i-1,3)) ',' int2str(leg_angles(i-1,4)) ',' int2str(leg_angles(i-1,5)) ',' int2str(leg_angles(i-1,6)) ',' int2str(leg_angles(i-1,7)) ',' int2str(leg_angles(i-1,8)) ',' int2str(leg_angles(i-1,9)) '},'];
+    if(i ~= 2)
+        fprintf(fileID,'},\n');
+    end
+    fprintf(fileID,'{');
+    for j = 2:8
+        fprintf(fileID,'%s,',int2str(leg_angles(i-1,j)));
+    end
+        fprintf(fileID,'%s',int2str(leg_angles(i-1,j+1)));
+%     fprintf(fileID,'},\n');
+%  data{i,1} = ['{' int2str(leg_angles(i-1,2)) ',' int2str(leg_angles(i-1,3)) ',' int2str(leg_angles(i-1,4)) ',' int2str(leg_angles(i-1,5)) ',' int2str(leg_angles(i-1,6)) ',' int2str(leg_angles(i-1,7)) ',' int2str(leg_angles(i-1,8)) ',' int2str(leg_angles(i-1,9)) '},'];
 %     string_output(i,:) = data;
 end
-data{i+1,1} = '}'
+
+
+
+% data{i+1,1} = '}'
+% fprintf(fileID,'{%d,%d,%d,%d,%d,%d,}','x','exp(x)');
+fprintf(fileID,'}};');
+fclose(fileID);
 
 % string_output(:,2) = leg_angles(:,2);
 % string_output(:,3) = ',';
