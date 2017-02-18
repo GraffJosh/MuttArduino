@@ -135,7 +135,7 @@ void setup() {
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
   sample_period = 10000;
-  simple = new Trajectory(320, walk_1);
+  simple = new Trajectory(321, walk_1);
 
   // Initialize the legs
 
@@ -150,13 +150,10 @@ void setup() {
   //yellow cable is clock source
   rb_leg = new Leg(right_back_fwd,right_back_rvs,right_back_servo,right_back_force,0);
   rb_leg->set_sample_freq(sample_period);
-
   lb_leg = new Leg(left_back_fwd,left_back_rvs,left_back_servo,left_back_force,1);
   lb_leg->set_sample_freq(sample_period);
-  //
   lf_leg = new Leg(left_forward_fwd,left_forward_rvs,left_forward_servo,left_forward_force,1);
   lf_leg->set_sample_freq(sample_period);
-  //rf leg 1000 is forwards, 2000 is backwards
   rf_leg = new Leg(right_forward_fwd,right_forward_rvs,right_forward_servo,right_forward_force,0);
   rf_leg->set_sample_freq(sample_period);
 
@@ -226,6 +223,7 @@ void loop() {
         current_trajectory = NULL;
         traj_loaded = 0;
       }else{
+
         rb_leg->set_position(curr_frame->upper_pos_rb,curr_frame->lower_pos_rb);
         lb_leg->set_position(curr_frame->upper_pos_lb,curr_frame->lower_pos_lb);
         rf_leg->set_position(curr_frame->upper_pos_rf,curr_frame->lower_pos_rf);

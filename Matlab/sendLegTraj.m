@@ -436,10 +436,10 @@ end
 % leg_angles =int2str(leg_angles);
 % int2str(leg_angles(i,2))
 filename = 'gait_1';
-filepath = strcat('g:\Downloads\MuttArduino\',filename,'.h')
+filepath = strcat('C:\Users\jpgraff\Downloads\MuttArduino\',filename,'.h')
 fileID = fopen(filepath,'w');
-fprintf(fileID,'#ifndef %s\n#define %s 1\n',filename,filename);
-fprintf(fileID,'static int %s[%d][8]=\n',filename,size(leg_angles,1));
+fprintf(fileID,'#ifndef %s\n#define %s 1\n',strcat(filename,'_h'),strcat(filename,'_h');
+fprintf(fileID,'static int %s[%d][8]=\n',filename,size(leg_angles,1)+1  );
 fprintf(fileID,'{');
 % data{1,1} = '{';
 for i = 2:321
@@ -461,7 +461,8 @@ end
 
 % data{i+1,1} = '}'
 % fprintf(fileID,'{%d,%d,%d,%d,%d,%d,}','x','exp(x)');
-fprintf(fileID,'}};');
+fprintf(fileID,'{4200,4200,4200,4200,4200,4200,4200,4200}};');
+fprintf(fileID,'\n#endif');
 fclose(fileID);
 
 % string_output(:,2) = leg_angles(:,2);

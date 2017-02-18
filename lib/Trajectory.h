@@ -21,7 +21,7 @@ public:
   Trajectory(int size, int trajFrameList[][8]);
   Trajectory();
 
-  Frame* get_frame(int curr_time);
+  int get_frame(int curr_time,Frame* ret_frame);
   void add_list(int n, int list_location[][8]);
 };
 
