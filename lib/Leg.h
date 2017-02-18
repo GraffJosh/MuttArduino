@@ -29,6 +29,7 @@ public:
 	int send_trajectory(Trajectory traj);
 	int zero();
 	double set_position(double angle);
+	double set_position(double angle, int servo_angle);
 	int set_servo(int servo);
 	double get_position();
 	int get_position_cmd();

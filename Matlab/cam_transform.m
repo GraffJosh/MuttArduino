@@ -16,4 +16,4 @@ D1 = 0.9114;% in
 Theta2o = -51.25;% deg
 
 k1 = sqrt(A^2 + B^2 + -2*A*B*cos(C + (Theta1f - Theta1o)));
-phi = (180 / (pi * R)) * ((-alpha * pi * R) / 180 + lcable - l1 - k1 - D2 + (Beta * pi * R) / 180 - D1 - ((Theta2f - Theta2o) * pi * R) / 180)
+phi = (180 / (pi * R)) * ((-alpha * pi * R) / 180 + lcable - l1 - k1 - D2 + (Beta * pi * R) / 180 - D1 - ((Theta2f - Theta2o) * pi * R) / 180);

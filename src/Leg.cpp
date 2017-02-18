@@ -41,7 +41,7 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, 
 	// frc_pid.SetTunings(pos_Kp,pos_Ki,pos_Kd);
 	// frc_pid.SetMode(AUTOMATIC);
 	// frc_pid.SetOutputLimits(-250,250);
-	//servo.attach(servo_chnl);
+	servo.attach(servo_chnl);
 	motor.attach(fwd_chnl);
 
 
@@ -113,6 +113,32 @@ double Leg::set_position(double angle)
 	set_pos = angle;
 	return set_pos;
 }
+
+//ask the leg to go to a position 0->360
+double Leg::set_position(double angle, int servo_angle)
+{
+
+	// Serial.print("angle: ");
+	// Serial.print(angle);
+	if(angle > max_angle)
+	{
+		angle = max_angle;
+	}else if(angle < min_angle)
+	{
+		angle = min_angle;
+	}
+	//angle = mapdouble(angle, min_angle,max_angle,min_angle_converted,max_angle_converted);
+	if(left)
+	{
+		angle = 1*angle/120;
+	}else{
+		angle = -1*angle/120;
+	}
+	set_pos = angle;
+	set_servo(servo_angle);
+	return set_pos;
+}
+
 double Leg::get_position()
 {
 	return curr_pos;

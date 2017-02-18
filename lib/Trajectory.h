@@ -11,8 +11,8 @@ private:
   //int curr_time,curr_index;
   //Frame sequence[TRAJ_LENGTH];
   int size;
-  Frame* frame_list;
-  void build_list(int list_size,int list_location[][8], Frame* list_return);
+  Frame** frame_list;
+  void build_list(int list_size,int list_location[][8], Frame** list_return);
 public:
   //constructor.
   //Size of the Trajectory
@@ -21,7 +21,7 @@ public:
   Trajectory(int size, int trajFrameList[][8]);
   Trajectory();
 
-
+  Frame* get_frame(int curr_time);
   void add_list(int n, int list_location[][8]);
 };
 

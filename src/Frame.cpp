@@ -17,3 +17,25 @@ Frame::Frame(int upper_pos_rb_var, int upper_pos_lb_var, int upper_pos_lf_var, i
     positions[7] = lower_pos_rf_var;
 
 }
+
+int Frame::is_null()
+{
+  if(positions[0]==4200)
+  {
+    return 0;
+  }else{
+    return 1;
+  }
+}
+
+void Frame::print()
+{
+  Serial.print("frame: ");
+  Serial.print(positions[0]);
+  Serial.print(", ");
+  Serial.print(positions[2]);
+  Serial.print(", ");
+  Serial.print(positions[4]);
+  Serial.print(", ");
+  Serial.println(positions[6]);
+}
