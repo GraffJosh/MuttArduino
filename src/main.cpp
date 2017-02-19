@@ -243,10 +243,10 @@ void loop() {
         Serial.print("\n\nTrajectory Complete.");
         home();
       }else{
+				rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
+			Serial.println(lf_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]));
         rb_leg->set_position(curr_frame->local_positions[4],curr_frame->local_positions[5]);
-        lb_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]);
-        rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
-        Serial.println(lf_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]));
+        lb_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]);
 
       }
     }
