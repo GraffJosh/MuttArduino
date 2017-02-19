@@ -17,6 +17,7 @@ class Frame {
       int get_frame(Frame* ret_frame);
       int is_null();
       void print();
+      void print_local();
 };
 
 #endif

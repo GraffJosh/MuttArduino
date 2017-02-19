@@ -18,7 +18,7 @@
 #if due == 0
 #endif
 
-int traj_time = 0,traj_period=25,traj_loaded=0;
+int traj_time = 0,traj_period=5,traj_loaded=0;
 Trajectory* current_trajectory;
 Trajectory* simple;//(100, walk_1);
 Frame* curr_frame;
@@ -30,11 +30,11 @@ Leg *lf_leg;
 Leg *rf_leg;
 Servo servoMotor;
 int ByteReceived;
-int print = 1, drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
+int drive = 0,upper_pos_pot=A0, lower_pos_pot=A1;
 int servo_pos = 0;
 int sample_period;
 int legs_initialized = 0;
-volatile unsigned int curr_time = 0;
+volatile int print = 1,curr_time = 0;
 //left back motor declarations
 int left_back_fwd = 8; //10;
 int left_back_rvs = 6; //4;
@@ -79,21 +79,30 @@ void timerIsr()
   }
   if(traj_loaded)
   {
-    ++traj_time;
+    ++curr_time;
   }
 }
 // #endif
 
+void home()
+{
+  rf_leg->set_position(0,30);
+  lf_leg->set_position(0,30);
+  rb_leg->set_position(100,30);
+  lb_leg->set_position(100,30);
+}
 void init_legs(){
   rb_leg->init_leg_encoder();
+  Serial.print("1 ");
   lb_leg->init_leg_encoder();
+  Serial.print("2 ");
   lf_leg->init_leg_encoder();
+  Serial.print("3 ");
   rf_leg->init_leg_encoder();
-
-
+  Serial.println("4 ");
+  home();
   legs_initialized = 1;
 }
-
 //loads a trajectory into the current context.
 //The trajectory will begin executing as soon as it can
 //will not stop until commanded or out of frames.
@@ -140,8 +149,8 @@ void setup() {
   sample_period = 10000;
 
   //the current_execution frame, with heap allocated memory (local_positions)
-  curr_frame =new Frame((int*)malloc(sizeof(int)*8));
-  simple = new Trajectory(321, gait_1); //creates a traj with len 321, and location gait_1
+  curr_frame = new Frame((int*) malloc(sizeof(int)*8));
+  simple = new Trajectory(322, gait_1); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -178,8 +187,9 @@ void serialEvent() {
     ByteReceived = Serial.read();
     if(ByteReceived == '1') // Single Quote! This is a character.
     {
-      Serial.print("Initializing Legs");
+      Serial.println("Initializing Legs");
       init_legs();
+      Serial.print("Initialization Complete.");
     }
     if(ByteReceived == '0')
     {
@@ -188,6 +198,7 @@ void serialEvent() {
     if(ByteReceived == 'g')
     {
       Serial.println("Now loading: Trajectory 1.");
+      legs_initialized =1;
       load_trajectory(simple);
     }
     if(ByteReceived == 'q')
@@ -212,32 +223,31 @@ void loop() {
       rb_leg->drive();
       lb_leg->drive();
       print = 0;
-      ++curr_time;
 
     }
-    if(curr_time == 10)
-    {
 
+
+    //if we are in the middle of executing a trajectory and it is time to send
+    //a new frame, execute the following
+    if(traj_loaded && (curr_time >= traj_period))
+    {
       curr_time=0;
-    }
-    if(traj_loaded && (traj_time % traj_period)==0)
-    {
+      traj_time++;
+      //store the frame to execute now into curr_frame
       current_trajectory->get_frame(traj_time,curr_frame);
-      Serial.print("Exec Frame");
-      curr_frame->print();
-
-
+      //if we're at the end of a traj, reset
       if(curr_frame->is_null())
       {
         current_trajectory = NULL;
         traj_loaded = 0;
+        Serial.print("\n\nTrajectory Complete.");
+        home();
       }else{
-
         rb_leg->set_position(curr_frame->local_positions[4],curr_frame->local_positions[5]);
         lb_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]);
         rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
-        lf_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]);
-        Serial.print(lf_leg->get_position_cmd());
+        Serial.println(lf_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]));
+
       }
     }
   }

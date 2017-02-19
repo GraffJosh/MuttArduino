@@ -36,7 +36,7 @@ Serial.println(list_size);
       if(newFrame == NULL)
       {Serial.println("fuck\n" );}
       frame_list[i] = newFrame;
-      newFrame->print();
+      // newFrame->print();
   }
 
 }
@@ -44,5 +44,16 @@ Serial.println(list_size);
 //returns 1 on success, 0 on failure
 int Trajectory::get_frame(int curr_time,Frame* ret_frame)
 {
-  return frame_list[curr_time]->get_frame(ret_frame);
+  frame_list[curr_time]->get_frame(ret_frame);
+  return 1;
+}
+
+void Trajectory::print()
+{
+  int i=0;
+  while(!(frame_list[i]->is_null()))
+  {
+    frame_list[i]->print();
+    ++i;
+  }
 }

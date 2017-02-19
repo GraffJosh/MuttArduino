@@ -61,7 +61,6 @@ int Leg::send_trajectory(Trajectory traj)
 void Leg::init_leg_encoder(){
 
 	encoder.init(MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
-	Serial.println("Initializing Encoder");
 	zero();
 
 }
@@ -77,13 +76,12 @@ int Leg::zero()
 {
 	for(int i=0;i<200;i++)
 	{
-		drive(1600);
+		drive(1650);
 		delay(15);
 		i++;
 		// Serial.print(", zero force: ");
 		// update_force();
 	}
-	Serial.println("zeroed");
 	set_servo(0);
 	encoder.zero();
 	return 0;
@@ -150,8 +148,14 @@ int Leg::get_position_cmd()
 
 int Leg::set_servo(int pos)
 {
-	pos = map(pos,0,180,-10,170);
+	if(left)
+	{
+	pos = map(pos,0,180,170,-10);
 	servo.write(pos);
+	}else{
+		pos = map(pos,0,180,-10,170);
+		servo.write(pos);
+	}
 	return pos;
 }
 

@@ -25,24 +25,23 @@ Frame::Frame(const int* frame_location){
 //returns 1 on success, 0 on failure
 int Frame::get_frame(Frame* ret_frame)
 {
-  if(this->is_null())
-  {return 0;}
   for(int i=0;i<8;i++)
   {
-    ret_frame->local_positions[i] = pgm_read_word_near(remote_positions[i]);
+    ret_frame->local_positions[i] = (int) pgm_read_word_near(remote_positions+i);
   }
   return 1;
 }
 
-//returns 0 if the frame is an endpoint of a framelist
+//if the frame is an endpoint, it returns 1.
 int Frame::is_null()
 {
-  if(remote_positions[0]==4200)
+  if(local_positions[0]==4200 || (int)pgm_read_word_near(remote_positions) == 4200)
   {
-    return 0;
-  }else{
     return 1;
+  }else{
+    return 0;
   }
+
 }
 
 void Frame::print()
@@ -63,4 +62,24 @@ void Frame::print()
   Serial.print((int)pgm_read_word_near(remote_positions+6));
   Serial.print(", ");
   Serial.println((int)pgm_read_word_near(remote_positions+7));
+}
+
+void Frame::print_local()
+{
+  Serial.print("frame: ");
+  Serial.print((int) local_positions[0]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[1]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[2]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[3]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[4]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[5]);
+  Serial.print(", ");
+  Serial.print((int) local_positions[6]);
+  Serial.print(", ");
+  Serial.println((int) local_positions[7]);
 }
