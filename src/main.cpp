@@ -198,7 +198,6 @@ void serialEvent() {
     if(ByteReceived == 'g')
     {
       Serial.println("Now loading: Trajectory 1.");
-      legs_initialized =1;
       load_trajectory(simple);
     }
     if(ByteReceived == 'q')

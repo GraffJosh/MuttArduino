@@ -1,15 +1,15 @@
 clearvars
-last = [0 0 0];
+%last = [0 0 0];
 angles = zeros(3,4);
 base = zeros(4);
 prox = [-100 -100 -100 -100];
 dist = [-20 -20 -20 -20];
-basegoal = [0 0 0 0];
-proxgoal = [-100 -100 -100 -100];
+basegoal = [0 0 0 0]; %upper join, hip joint
+proxgoal = [-100 -100 -100 -100]; %lower joint, knee joint
 basestep = zeros(4);
 proxstep = zeros(4);
-base_goal1 = -40;
-base_goal2 = -20;
+%base_goal1 = -40;
+%base_goal2 = -20;
 rear_base_offset =100;
 figure(1);
 figHandle = gcf;
@@ -17,18 +17,19 @@ axis equal;
 axis([-1500 700 0 900]);
 grid on;
 
-for n = 1:1                         % repeat the motion 5 times
-    base_goal_set = [-40 0 0 0];
-    prox_goal_set = [-90 -100 -90];
-    for i = 1:4
-        for k= 1:size(base_goal_set())
+last_timegoal = 0;
+for n = 1:1                        % repeat the motion 
+    base_goal_set = [-40 0];%set the position of the upper limb in order of execution for one leg
+    prox_goal_set = [-75 -100];
+    
+    for i = 1:4 %for each leg
+        for k= 1:size(base_goal_set,2) %iterate for each frame 
             %       STEP 1
-                       % FR BL BR FL
+                       % FR BL BR FL 
             basegoal = zeros(4);
             basegoal(i) = base_goal_set(k);     % set angle goals for each of the leg's upper joint
             proxgoal = [-100 -100 -100 -100];
-%             proxgoal(i) = prox_goal_set(k);
-            last_timegoal = 0;
+            proxgoal(i) = prox_goal_set(k);
             timegoal = 20;                   % set the time to get there.
             for j = 1:4 %for each leg
                 % set the step distance for each limb
@@ -50,15 +51,17 @@ for n = 1:1                         % repeat the motion 5 times
                     leg_angles(j+last_timegoal,5)=cam_transform(angles(1,4),angles(2,4))-180;
                 points = plotArm3(angles,[500,300,350],fighandle);
             end
+%             angles(1,1)
+%             angles(2,1)
+%             cam_transform(angles(1,1),angles(2,1))
             last_timegoal = timegoal+last_timegoal;
             
                         %       STEP 1
                        % FR BL BR FL
-%             basegoal = zeros(4);
-%             basegoal(i) = base_goal_set(k);     % set angle goals for each of the leg's upper joint
+            basegoal = zeros(4);
+            basegoal(i) = base_goal_set(k);     % set angle goals for each of the leg's upper joint
             proxgoal = [-100 -100 -100 -100];
             proxgoal(i) = prox_goal_set(k);
-            last_timegoal = 0;
             timegoal = 20;                   % set the time to get there.
             for j = 1:4 %for each leg
                 % set the step distance for each limb
@@ -84,26 +87,30 @@ for n = 1:1                         % repeat the motion 5 times
         end
     end
 end
+
 % leg_angles =int2str(leg_angles);
 % int2str(leg_angles(i,2))
 filename = 'gait_1';
-filepath = strcat('C:\Users\jpgraff\Downloads\MuttArduino\',filename,'.h')
+filepath = strcat('C:\Users\amartinez\Documents\MuttArduino\',filename,'.h')
 fileID = fopen(filepath,'w');
 fprintf(fileID,'#include <avr/pgmspace.h>\n');
 fprintf(fileID,'#ifndef %s\n#define %s 1\n',strcat(filename,'_h'),strcat(filename,'_h'));
 fprintf(fileID,'const int %s[%d][8] PROGMEM=\n',filename,size(leg_angles,1)+2);
 fprintf(fileID,'{');
 % data{1,1} = '{';
-for j = 2:321
+for o = 2:last_timegoal
+    
 %  data{i,1} = ['{' int2str(leg_angles(i-1,2)) ',' int2str(leg_angles(i-1,3)) ',' int2str(leg_angles(i-1,4)) ',' int2str(leg_angles(i-1,5)) ',' int2str(leg_angles(i-1,6)) ',' int2str(leg_angles(i-1,7)) ',' int2str(leg_angles(i-1,8)) ',' int2str(leg_angles(i-1,9)) '},'];
 %     if(i ~= 2)
 %         fprintf(fileID,'},\n');
 %     end
     fprintf(fileID,'{');
-    for j = 2:8
-        fprintf(fileID,'%s,',int2str(leg_angles(j-1,j)));
+    for p = 2:8
+        fprintf(fileID,'%s,',int2str(leg_angles(o-1,p)));
+        
     end
-        fprintf(fileID,'%s',int2str(leg_angles(j-1,j+1)));
+    
+        fprintf(fileID,'%s',int2str(leg_angles(o-1,p+1)));
     fprintf(fileID,'},\n');
 %  data{i,1} = ['{' int2str(leg_angles(i-1,2)) ',' int2str(leg_angles(i-1,3)) ',' int2str(leg_angles(i-1,4)) ',' int2str(leg_angles(i-1,5)) ',' int2str(leg_angles(i-1,6)) ',' int2str(leg_angles(i-1,7)) ',' int2str(leg_angles(i-1,8)) ',' int2str(leg_angles(i-1,9)) '},'];
 %     string_output(i,:) = data;
