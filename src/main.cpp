@@ -14,13 +14,17 @@
 //#include "../lib/DueTimer/DueTimer.h"
 #include "../lib/Servo/src/Servo.h"
 #include "../gait_1.h"
+#include "../gait_2.h"
+#include "../gait_3.h"
 #include <TimerOne.h>
 #if due == 0
 #endif
 
 int traj_time = 0,traj_period=2,traj_loaded=0;
 Trajectory* current_trajectory;
-Trajectory* simple;//(100, walk_1);
+Trajectory* simple;
+Trajectory* trot;
+Trajectory* servo_test;
 Frame* curr_frame;
 
 //Leg declarations
@@ -86,7 +90,7 @@ void timerIsr()
 
 void home()
 {
-  rf_leg->set_position(0,30);
+  rf_leg->set_position(0,60);
   lf_leg->set_position(0,30);
   rb_leg->set_position(100,90);
   lb_leg->set_position(100,90);
@@ -160,6 +164,8 @@ void setup() {
   //the current_execution frame, with heap allocated memory (local_positions)
   curr_frame = new Frame((int*) malloc(sizeof(int)*8));
   simple = new Trajectory(gait_1_size, gait_1); //creates a traj with len 321, and location gait_1
+  trot = new Trajectory(gait_2_size, gait_2); //creates a traj with len 321, and location gait_1
+  servo_test = new Trajectory(gait_3_size, gait_3); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -209,12 +215,15 @@ void serialEvent() {
       Serial.println("Now loading: Trajectory 1.");
       load_trajectory(simple);
     }
-    if(ByteReceived == 'd')
+    if(ByteReceived == 't')
     {
-      rf_leg->set_position(100,30);
-      lf_leg->set_position(100,30);
-      rb_leg->set_position(100,30);
-      lb_leg->set_position(100,30);
+      Serial.println("Now loading: Trajectory 2.");
+      load_trajectory(trot);
+    }
+    if(ByteReceived == 's')
+    {
+      Serial.println("Now loading: Trajectory 3.");
+      load_trajectory(servo_test);
     }
     if(ByteReceived == 'q')
     {
@@ -256,7 +265,7 @@ void loop() {
       {
         current_trajectory = NULL;
         traj_loaded = 0;
-        Serial.print("\n\nTrajectory Complete.");
+        Serial.println("\n\nTrajectory Complete.");
         home();
       }else{
 				rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);

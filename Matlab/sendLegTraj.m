@@ -59,7 +59,7 @@ for n = 1:1                        % repeat the motion
 end
 
 
-filepath = strcat('C:\Users\amartinez\Documents\MuttArduino\',filename,'.h')
+filepath = strcat('C:\Users\jpgraff\Downloads\MuttArduino\',filename,'.h')
 fileID = fopen(filepath,'w');
 fprintf(fileID,'#include <avr/pgmspace.h>\n');
 fprintf(fileID,'#ifndef %s\n#define %s 1\n',strcat(filename,'_h'),strcat(filename,'_h'));
