@@ -18,7 +18,7 @@
 #if due == 0
 #endif
 
-int traj_time = 0,traj_period=5,traj_loaded=0;
+int traj_time = 0,traj_period=2,traj_loaded=0;
 Trajectory* current_trajectory;
 Trajectory* simple;//(100, walk_1);
 Frame* curr_frame;
@@ -88,8 +88,13 @@ void home()
 {
   rf_leg->set_position(0,30);
   lf_leg->set_position(0,30);
-  rb_leg->set_position(100,30);
-  lb_leg->set_position(100,30);
+  rb_leg->set_position(100,90);
+  lb_leg->set_position(100,90);
+
+  // rf_leg->power(0);
+  // lf_leg->power(0);
+  // rb_leg->power(0);
+  // lb_leg->power(0);
 }
 void init_legs(){
   rb_leg->init_leg_encoder();
@@ -108,6 +113,10 @@ void init_legs(){
 //will not stop until commanded or out of frames.
 int load_trajectory(Trajectory* load_traj)
 {
+  rf_leg->power(1);
+  lf_leg->power(1);
+  rb_leg->power(1);
+  lb_leg->power(1);
   current_trajectory = load_traj;
   traj_time = 0;
   traj_loaded = 1;
@@ -150,7 +159,7 @@ void setup() {
 
   //the current_execution frame, with heap allocated memory (local_positions)
   curr_frame = new Frame((int*) malloc(sizeof(int)*8));
-  simple = new Trajectory(322, gait_1); //creates a traj with len 321, and location gait_1
+  simple = new Trajectory(gait_1_size, gait_1); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -200,6 +209,13 @@ void serialEvent() {
       Serial.println("Now loading: Trajectory 1.");
       load_trajectory(simple);
     }
+    if(ByteReceived == 'd')
+    {
+      rf_leg->set_position(100,30);
+      lf_leg->set_position(100,30);
+      rb_leg->set_position(100,30);
+      lb_leg->set_position(100,30);
+    }
     if(ByteReceived == 'q')
     {
       Serial.println("Abort Trajectory.");
@@ -234,6 +250,7 @@ void loop() {
       traj_time++;
       //store the frame to execute now into curr_frame
       current_trajectory->get_frame(traj_time,curr_frame);
+      curr_frame->print_local();
       //if we're at the end of a traj, reset
       if(curr_frame->is_null())
       {
@@ -243,7 +260,7 @@ void loop() {
         home();
       }else{
 				rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
-			Serial.println(lf_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]));
+			  lf_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]);
         rb_leg->set_position(curr_frame->local_positions[4],curr_frame->local_positions[5]);
         lb_leg->set_position(curr_frame->local_positions[6],curr_frame->local_positions[7]);
 

@@ -25,6 +25,8 @@ Leg::Leg(int fwd_chnl_pin,int rvs_chnl_pin,int servo_chnl_pin,int frc_chnl_pin, 
 	rvs_chnl = rvs_chnl_pin;
 	max_angle=360;
 	min_angle = 0;
+	min_servo_angle = -5;
+	max_servo_angle = 165;
 	max_frc=150;
 	min_frc = 0;
 	left = is_left;
@@ -148,6 +150,14 @@ int Leg::get_position_cmd()
 
 int Leg::set_servo(int pos)
 {
+	if(pos > max_servo_angle)
+	{
+		pos = max_servo_angle;
+	}
+	if(pos < min_servo_angle)
+	{
+		pos = min_servo_angle;
+	}
 	if(left)
 	{
 	pos = map(pos,0,180,170,-10);
@@ -204,7 +214,17 @@ void Leg::drive()
 		motor.writeMicroseconds(cmd_pos+1500);
 	}
 }
-
+void Leg::power(int power)
+{
+	if(power)
+	{
+		servo.attach(servo_chnl);
+		motor.attach(fwd_chnl);
+	}else{
+		servo.detach();
+		// motor.detach();g
+	}
+}
 
 void Leg::set_sample_freq(int sample_freq)
 {

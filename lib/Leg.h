@@ -21,7 +21,7 @@ private:
 	double set_pos, curr_pos, cmd_pos, pos_Kp, pos_Ki, pos_Kd;
 	double set_frc, curr_frc, cmd_frc, frc_Kp, frc_Ki, frc_Kd;
 	double max_angle_converted, min_angle_converted;
-	int fwd_chnl,rvs_chnl, max_angle,min_angle;
+	int fwd_chnl,rvs_chnl, max_angle,min_angle,min_servo_angle,max_servo_angle;
 	int frc_chnl, max_frc, min_frc;
 	int servo_chnl,left;
 public:
@@ -40,6 +40,7 @@ public:
 	void drive();
 	void set_sample_freq(int sample_freq);
 	void drive(int cmd);
+	void power(int power);
 	void update_position();
 	void update_force();
 	void init_leg_encoder();
