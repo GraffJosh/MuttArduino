@@ -16,6 +16,8 @@
 #include "../gait_1.h"
 #include "../gait_2.h"
 #include "../gait_3.h"
+#include "../gait_4.h"
+#include "../gait_5.h"
 #include <TimerOne.h>
 #if due == 0
 #endif
@@ -25,6 +27,8 @@ Trajectory* current_trajectory;
 Trajectory* simple;
 Trajectory* trot;
 Trajectory* servo_test;
+Trajectory* single_step;
+Trajectory* biped;
 Frame* curr_frame;
 
 //Leg declarations
@@ -87,18 +91,21 @@ void timerIsr()
   }
 }
 // #endif
-
+//home position
 void home()
 {
   rf_leg->set_position(0,60);
-  lf_leg->set_position(0,30);
+  lf_leg->set_position(0,60);
   rb_leg->set_position(100,90);
   lb_leg->set_position(100,90);
-
-  // rf_leg->power(0);
-  // lf_leg->power(0);
-  // rb_leg->power(0);
-  // lb_leg->power(0);
+}
+//this is just to stand
+void stand()
+{
+  rf_leg->set_position(210,90);
+  lf_leg->set_position(210,90);
+  //rb_leg->set_position(190,90);
+  //lb_leg->set_position(190,90);
 }
 void init_legs(){
   rb_leg->init_leg_encoder();
@@ -166,6 +173,8 @@ void setup() {
   simple = new Trajectory(gait_1_size, gait_1); //creates a traj with len 321, and location gait_1
   trot = new Trajectory(gait_2_size, gait_2); //creates a traj with len 321, and location gait_1
   servo_test = new Trajectory(gait_3_size, gait_3); //creates a traj with len 321, and location gait_1
+  single_step = new Trajectory(gait_4_size, gait_4); //creates a traj with len 321, and location gait_1
+  biped = new Trajectory(gait_5_size, gait_5); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -176,7 +185,9 @@ void setup() {
   //3 -> RF Leg
   //4 -> LF Leg
   //LOOKING FROM THE BOTTOM OF THE ROBOT
-
+  //notes on the servos
+  //looking at the profile, the CCW is 0 the CW is 180
+  //front leg 0 appears to be 60 on the front_servo, and 90 on the back.
   //white cable from encoder is SDA
   //yellow cable is clock source
   rb_leg = new Leg(right_back_fwd,right_back_rvs,right_back_servo,right_back_force,0);
@@ -206,24 +217,30 @@ void serialEvent() {
       init_legs();
       Serial.print("Initialization Complete.");
     }
-    if(ByteReceived == '0')
+    if(ByteReceived == 'h')
     {
-      Serial.print("RECEIVED 0");
+      Serial.print("Pose: Home.");
+      home();
+    }
+    if(ByteReceived == 's')
+    {
+      Serial.println("Pose: Stand.");
+      stand();
     }
     if(ByteReceived == 'g')
     {
-      Serial.println("Now loading: Trajectory 1.");
-      load_trajectory(simple);
+      Serial.println("Now loading: Trajectory 4.");
+      load_trajectory(single_step);
     }
     if(ByteReceived == 't')
     {
       Serial.println("Now loading: Trajectory 2.");
       load_trajectory(trot);
     }
-    if(ByteReceived == 's')
+    if(ByteReceived == 'b')
     {
-      Serial.println("Now loading: Trajectory 3.");
-      load_trajectory(servo_test);
+      Serial.println("Now loading: Trajectory 5.");
+      load_trajectory(biped);
     }
     if(ByteReceived == 'q')
     {
