@@ -76,7 +76,7 @@ double Leg::get_encoder_position()
 //returns zero on success.
 int Leg::zero()
 {
-	for(int i=0;i<200;i++)
+	for(int i=0;i<100;i++)
 	{
 		drive(1650);
 		delay(15);
@@ -84,7 +84,7 @@ int Leg::zero()
 		// Serial.print(", zero force: ");
 		// update_force();
 	}
-	set_servo(0);
+	set_servo(120);
 	encoder.zero();
 	return 0;
 }

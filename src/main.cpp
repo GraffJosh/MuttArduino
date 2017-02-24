@@ -16,8 +16,9 @@
 #include "../gait_1.h"
 #include "../gait_2.h"
 #include "../gait_3.h"
-#include "../gait_4.h"
-#include "../gait_5.h"
+// #include "../gait_4.h"
+// #include "../gait_5.h"
+#include "../gait_6.h"
 #include <TimerOne.h>
 #if due == 0
 #endif
@@ -29,6 +30,7 @@ Trajectory* trot;
 Trajectory* servo_test;
 Trajectory* single_step;
 Trajectory* biped;
+Trajectory* six;
 Frame* curr_frame;
 
 //Leg declarations
@@ -94,18 +96,18 @@ void timerIsr()
 //home position
 void home()
 {
-  rf_leg->set_position(0,60);
-  lf_leg->set_position(0,60);
-  rb_leg->set_position(100,90);
-  lb_leg->set_position(100,90);
+  rf_leg->set_position(0,90);
+  lf_leg->set_position(0,90);
+  rb_leg->set_position(0,90);
+  lb_leg->set_position(0,90);
 }
 //this is just to stand
 void stand()
 {
-  rf_leg->set_position(210,90);
-  lf_leg->set_position(210,90);
-  //rb_leg->set_position(190,90);
-  //lb_leg->set_position(190,90);
+  rf_leg->set_position(0,90);
+  lf_leg->set_position(0,90);
+  //rb_leg->set_position(0,90);
+  //lb_leg->set_position(0,90);
 }
 void init_legs(){
   rb_leg->init_leg_encoder();
@@ -170,11 +172,12 @@ void setup() {
 
   //the current_execution frame, with heap allocated memory (local_positions)
   curr_frame = new Frame((int*) malloc(sizeof(int)*8));
-  simple = new Trajectory(gait_1_size, gait_1); //creates a traj with len 321, and location gait_1
+  // simple = new Trajectory(gait_1_size, gait_1); //creates a traj with len 321, and location gait_1
   trot = new Trajectory(gait_2_size, gait_2); //creates a traj with len 321, and location gait_1
-  servo_test = new Trajectory(gait_3_size, gait_3); //creates a traj with len 321, and location gait_1
-  single_step = new Trajectory(gait_4_size, gait_4); //creates a traj with len 321, and location gait_1
-  biped = new Trajectory(gait_5_size, gait_5); //creates a traj with len 321, and location gait_1
+  // servo_test = new Trajectory(gait_3_size, gait_3); //creates a traj with len 321, and location gait_1
+  // single_step = new Trajectory(gait_4_size, gait_4); //creates a traj with len 321, and location gait_1
+  // biped = new Trajectory(gait_5_size, gait_5); //creates a traj with len 321, and location gait_1
+  six = new Trajectory(gait_6_size, gait_6); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -241,6 +244,11 @@ void serialEvent() {
     {
       Serial.println("Now loading: Trajectory 5.");
       load_trajectory(biped);
+    }
+    if(ByteReceived == '6')
+    {
+      Serial.println("Now loading: Trajectory 6.");
+      load_trajectory(six);
     }
     if(ByteReceived == 'q')
     {
