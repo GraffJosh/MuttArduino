@@ -20,6 +20,7 @@
 // #include "../gait_5.h"
 #include "../gait_6.h"
 #include <TimerOne.h>
+#include "../gait_8.h"
 #if due == 0
 #endif
 
@@ -31,6 +32,8 @@ Trajectory* servo_test;
 Trajectory* single_step;
 Trajectory* biped;
 Trajectory* six;
+Trajectory* eight;
+
 Frame* curr_frame;
 
 //Leg declarations
@@ -178,6 +181,7 @@ void setup() {
   // single_step = new Trajectory(gait_4_size, gait_4); //creates a traj with len 321, and location gait_1
   // biped = new Trajectory(gait_5_size, gait_5); //creates a traj with len 321, and location gait_1
   six = new Trajectory(gait_6_size, gait_6); //creates a traj with len 321, and location gait_1
+  eight = new Trajectory(gait_8_size, gait_8); //creates a traj with len 321, and location gait_1
 
 
   // Initialize the legs
@@ -216,43 +220,49 @@ void serialEvent() {
     ByteReceived = Serial.read();
     if(ByteReceived == '1') // Single Quote! This is a character.
     {
-      Serial.println("Initializing Legs");
+      //Serial.println("Initializing Legs");
       init_legs();
-      Serial.print("Initialization Complete.");
+      //Serial.print("Initialization Complete.");
     }
     if(ByteReceived == 'h')
     {
-      Serial.print("Pose: Home.");
+      //Serial.print("Pose: Home.");
       home();
     }
     if(ByteReceived == 's')
     {
-      Serial.println("Pose: Stand.");
+      //Serial.println("Pose: Stand.");
       stand();
     }
     if(ByteReceived == 'g')
     {
-      Serial.println("Now loading: Trajectory 4.");
+      //Serial.println("Now loading: Trajectory 4.");
       load_trajectory(single_step);
     }
     if(ByteReceived == 't')
     {
-      Serial.println("Now loading: Trajectory 2.");
+      //Serial.println("Now loading: Trajectory 2.");
       load_trajectory(trot);
     }
     if(ByteReceived == 'b')
     {
-      Serial.println("Now loading: Trajectory 5.");
+      //Serial.println("Now loading: Trajectory 5.");
       load_trajectory(biped);
     }
     if(ByteReceived == '6')
     {
-      Serial.println("Now loading: Trajectory 6.");
+      //Serial.println("Now loading: Trajectory 6.");
       load_trajectory(six);
+    }
+
+    if(ByteReceived == '8')
+    {
+      //Serial.println("Now loading: Trajectory 6.");
+      load_trajectory(eight);
     }
     if(ByteReceived == 'q')
     {
-      Serial.println("Abort Trajectory.");
+      //Serial.println("Abort Trajectory.");
       traj_loaded = 0;
     }
     Serial.println();    // End the line
@@ -284,14 +294,14 @@ void loop() {
       traj_time++;
       //store the frame to execute now into curr_frame
       current_trajectory->get_frame(traj_time,curr_frame);
-      curr_frame->print_local();
+      //curr_frame->print_local();
       //if we're at the end of a traj, reset
       if(curr_frame->is_null())
       {
         current_trajectory = NULL;
-        traj_loaded = 0;
-        Serial.println("\n\nTrajectory Complete.");
         home();
+        traj_loaded = 0;
+        Serial.println('0');
       }else{
 				rf_leg->set_position(curr_frame->local_positions[0],curr_frame->local_positions[1]);
 			  lf_leg->set_position(curr_frame->local_positions[2],curr_frame->local_positions[3]);
